@@ -3,7 +3,8 @@
 #to see supported syntax highlighting
 #pandoc --list-highlight-languages
 
-overwrite=false
+force=false
+reprocess=false
 
 function error_exit() {
     echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -25,8 +26,10 @@ REQUIRED ARGUMENTS:
    -o, --output DIR
       Directory for output files.
 OPTIONAL ARGUMENTS:
-   --overwrite
-      Overwrite existing output.
+   -f, --force
+      Overwrite existing slides.md and pptx files in output directory.
+   -r, --reprocess
+      Reprocess input files even if output files exist in output directory.
    -h, --help
       Show this message
 
@@ -45,8 +48,11 @@ while [ "$1" != "" ]; do
         shift
         output=$1
         ;;
-    --overwrite)
-        overwrite=true
+    -f | --force)
+        force=true
+        ;;
+    -r | --reprocess)
+        reprocess=true
         ;;    
     -h | --help)
         usage
@@ -83,10 +89,10 @@ while IFS='' read -r url || [ -n "$url" ]; do
     continue
   fi
   case "$url" in \#*) continue ;; esac
-  echo "Generating image for URL '$url'"
+  echo "Generating image for URL '$url'."
   output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
-  if [ -f "${output}/includes/${output_name}.png" ] && ! $overwrite; then
-    echo "$url has already been processed--skipping"
+  if [ -f "${output}/includes/${output_name}.png" ] && ! $reprocess; then
+    echo "'$url' has already been processed--skipping."
     continue
   fi
   #these settings give a final image of width 4485 pixels
@@ -94,14 +100,12 @@ while IFS='' read -r url || [ -n "$url" ]; do
 done < "${input}/sites.txt"
 
 #convert dot files to graphs using graphviz
-#dot -Tpdf graph2.dot -o graph2.pd
+#dot -Tpdf graph2.dot -o graph2.pdf
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f | while IFS= read -r dot; do
   file=$(basename -- "$dot")
-  extension="${file##*.}"
-  filename="${file%.*}" 
-  echo "Generating image for file '$dot'"
-  if [ -f "${output}/includes/${file}.pdf" ] && ! $overwrite; then
-    echo "'$dot' has already been processed--skipping"
+  echo "Generating pdf for file '$dot'."
+  if [ -f "${output}/includes/${file}.pdf" ] && ! $reprocess; then
+    echo "'$dot' has already been processed--skipping."
     continue
   fi
   dot -Tpdf "$dot" -o "$output/includes/${file}.pdf"
@@ -111,11 +115,9 @@ done
 #csv2md -p data.csv > output.md
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read -r csv; do
   file=$(basename -- "$csv")
-  extension="${file##*.}"
-  filename="${file%.*}" 
-  echo "Generating Markdown for file '$csv'"
-  if [ -f "${output}/includes/${file}.md" ] && ! $overwrite; then
-    echo "'$csv' has already been processed--skipping"
+  echo "Generating Markdown for file '$csv'."
+  if [ -f "${output}/includes/${file}.md" ] && ! $reprocess; then
+    echo "'$csv' has already been processed--skipping."
     continue
   fi
   #extend short rows to length of first row
@@ -124,24 +126,22 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read
   rm -f "${output}/includes/${file}.temp"
 done
 
-#cp pdf files to output/includes
-find "${input}" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f | while IFS= read -r pdf; do
-  file=$(basename -- "$pdf")
-  extension="${file##*.}"
-  filename="${file%.*}"
-  echo "Copying file '$pdf'"
-  if [ -f "${output}/includes/${file}" ] && ! $overwrite; then
-    echo "$'pdf' has already been copied--skipping"
+#cp additional files that are needed in output/includes
+find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -type f | while IFS= read -r include_file; do
+  file=$(basename -- "$include_file")
+  echo "Copying file '$include_file'."
+  if [ -f "${output}/includes/${file}" ] && ! $reprocess; then
+    echo "'$include_file' has already been copied--skipping."
     continue
   fi
-  cp "$pdf" "${output}/includes/${file}"
+  cp "$include_file" "${output}/includes/${file}"
 done
 
 #convert pdf files to png
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f | while IFS= read -r pdf; do
-  echo "Generating image for '$pdf'"
-  if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ] && ! $overwrite; then
-    echo "'$pdf' has already been processed--skipping"
+  echo "Generating png for '$pdf'."
+  if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ] && ! $reprocess; then
+    echo "'$pdf' has already been processed--skipping."
     continue
   fi
   pdftoppm -f 1 -l 1 -png "$pdf" "${pdf}" -r 600
@@ -150,11 +150,9 @@ done
 #convert jpg and jpeg images to png
 find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jpeg \) | while IFS= read -r jpg; do
   file=$(basename -- "$jpg")
-  extension="${file##*.}"
-  filename="${file%.*}"
-  echo "Converting '$jpg'"
-  if [ -f "${output}/includes/${file}.png" ] && ! $overwrite; then
-    echo "'$jpg' has already been processed--skipping"
+  echo "Generating png for '$jpg'."
+  if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
+    echo "'$jpg' has already been processed--skipping."
     continue
   fi
   convert "$jpg" "${output}/includes/${file}.png"
@@ -163,14 +161,13 @@ done
 #convert svg images to png
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f | while IFS= read -r svg; do
   file=$(basename -- "$svg")
-  extension="${file##*.}"
-  filename="${file%.*}"
-  echo "Converting '$svg'"
-  if [ -f "${output}/includes/${file}.png" ] && ! $overwrite; then
-    echo "'$svg' has already been processed--skipping"
+  echo "Generating png for '$svg'."
+  if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
+    echo "'$svg' has already been processed--skipping."
     continue
   fi
-  convert "$svg" "${output}/includes/${file}.png"
+  #convert "$svg" "${output}/includes/${file}.png"
+  SVGEXPORT_TIMEOUT=60 svgexport "$svg" "${output}/includes/${file}.png" 4000:
 done
 
 #crop images
@@ -180,11 +177,9 @@ fi
 
 find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
   file=$(basename -- "$png")
-  extension="${file##*.}"
-  filename="${file%.*}"
-  echo "Cropping '$png'"
-  if [ -f "${output}/includes/cropped/${file}" ] && ! $overwrite; then
-    echo "'$png' has already been processed--skipping"
+  echo "Cropping '$png'."
+  if [ -f "${output}/includes/cropped/${file}" ] && ! $reprocess; then
+    echo "'$png' has already been processed--skipping."
     continue
   fi
   convert "$png" -trim -bordercolor White -border 30x30 "${output}/includes/cropped/${file}"
@@ -200,17 +195,22 @@ fi
 
 find "${output}/includes/cropped" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
   file=$(basename -- "$png")
-  extension="${file##*.}"
-  filename="${file%.*}"
-  echo "Resizing '$png'"
-  if [ -f "${output}/includes/cropped/resized/${file}" ] && ! $overwrite; then
-    echo "'$png' has already been processed--skipping"
+  echo "Resizing '$png'."
+  if [ -f "${output}/includes/cropped/resized/${file}" ] && ! $reprocess; then
+    echo "'$png' has already been processed--skipping."
     continue
   fi
   convert "$png" -resize 4000 "${output}/includes/cropped/resized/${file}"
 done
 
-exit
+markdown=${output}/slides.md
+
+if [ -f "${markdown}" ] && ! $force; then
+  echo "'${markdown}' has already been created."
+  echo "Use '--force' to overwrite."
+else
+
+echo "Generating Markdown file '$markdown'."
 
 #generate Markdown output
 TITLE=$(cat <<-END
@@ -220,16 +220,16 @@ TITLE=$(cat <<-END
 END
 )
 
-echo "$TITLE" > "$output"
-echo -e "" >> "$output"
+echo "$TITLE" > "$markdown"
+echo -e "" >> "$markdown"
 
 SECTION=$(cat <<-END
 # Section title
 END
 )
 
-echo "$SECTION" >> "$output"
-echo -e "" >> "$output"
+echo "$SECTION" >> "$markdown"
+echo -e "" >> "$markdown"
 
 SINGLE_BULLETED_LIST=$(cat <<-END
 ## Slide title
@@ -248,8 +248,8 @@ Speaker notes go here
 END
 )
 
-echo "$SINGLE_BULLETED_LIST" >> "$output"
-echo -e "" >> "$output"
+echo "$SINGLE_BULLETED_LIST" >> "$markdown"
+echo -e "" >> "$markdown"
 
 SINGLE_BULLETED_LIST_WITH_INDENTING=$(cat <<-END
 ## Slide title
@@ -270,8 +270,8 @@ Speaker notes go here
 END
 )
 
-echo "$SINGLE_BULLETED_LIST_WITH_INDENTING" >> "$output"
-echo -e "" >> "$output"
+echo "$SINGLE_BULLETED_LIST_WITH_INDENTING" >> "$markdown"
+echo -e "" >> "$markdown"
 
 SINGLE_ORDERED_LIST_WITH_INDENTING=$(cat <<-END
 ## Slide title
@@ -293,8 +293,8 @@ Speaker notes go here
 END
 )
 
-echo "$SINGLE_ORDERED_LIST_WITH_INDENTING" >> "$output"
-echo -e "" >> "$output"
+echo "$SINGLE_ORDERED_LIST_WITH_INDENTING" >> "$markdown"
+echo -e "" >> "$markdown"
 
 TWO_COLUMNS_WITH_LISTS=$(cat <<-END
 ## Slide title
@@ -336,11 +336,11 @@ Speaker notes go here
 END
 )
 
-echo "$TWO_COLUMNS_WITH_LISTS" >> "$output"
-echo -e "" >> "$output"
+echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
+echo -e "" >> "$markdown"
 
 #Generate single-column and two-column slide for each image
-find "${includes}/cropped/resized" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
+find "${output}/includes/cropped/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f | while IFS= read -r png; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
@@ -355,8 +355,8 @@ Speaker notes go here
 END
 )
 
-  echo "$SINGLE_IMAGE" >> "$output"
-  echo -e "" >> "$output"
+  echo "$SINGLE_IMAGE" >> "$markdown"
+  echo -e "" >> "$markdown"
 
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
@@ -390,13 +390,69 @@ Speaker notes go here
 END
 )
 
-  echo "$SINGLE_IMAGE" >> "$output"
-  echo -e "" >> "$output"
+  echo "$SINGLE_IMAGE" >> "$markdown"
+  echo -e "" >> "$markdown"
+
+done
+
+#Generate single-column and two-column slide for each image
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f | while IFS= read -r gif; do
+  SINGLE_IMAGE=$(cat <<-END
+## Slide title
+
+![]($gif)
+
+::: notes
+
+Speaker notes go here
+
+:::
+
+END
+)
+
+  echo "$SINGLE_IMAGE" >> "$markdown"
+  echo -e "" >> "$markdown"
+
+  SINGLE_IMAGE=$(cat <<-END
+## Slide title
+
+:::::::::::::: {.columns}
+
+::: {.column width="50%"}
+
+Left column:
+
+- Bullet
+- Bullet
+- Bullet
+
+:::
+
+::: {.column width="50%"}
+
+![]($gif)
+
+:::
+
+::::::::::::::
+
+::: notes
+
+Speaker notes go here
+
+:::
+
+END
+)
+
+  echo "$SINGLE_IMAGE" >> "$markdown"
+  echo -e "" >> "$markdown"
 
 done
 
 #Generate a slide for each Markdown file
-find "${includes}" -mindepth 1 -maxdepth 1 -name "*.md" -type f | while IFS= read -r md; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f | while IFS= read -r md; do
   text=$(<"$md")
   TABLE=$(cat <<-END
 ## Slide title
@@ -412,13 +468,13 @@ Speaker notes go here
 END
 )
 
-  echo "$TABLE" >> "$output"
-  echo -e "" >> "$output"
+  echo "$TABLE" >> "$markdown"
+  echo -e "" >> "$markdown"
 
 done
 
 #Generate a single-column and two-column slide for each code file
-find "${includes}" -mindepth 1 -maxdepth 1 -not -name "*.csv" -not -name "*.dot" -not -name ".DS_Store" -not -name "*.gif" -not -name "*.jpeg" -not -name "*.jpg"  -not -name "*.pdf" -not -name "*.md" -not -name "*.png" -not -name "*.temp" -not -name "urls.txt" -type f | while IFS= read -r code; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -type f | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
@@ -445,8 +501,8 @@ Speaker notes go here
 END
 )
 
-  echo "$CODE" >> "$output"
-  echo -e "" >> "$output"
+  echo "$CODE" >> "$markdown"
+  echo -e "" >> "$markdown"
 
     CODE=$(cat <<-END
 ## Slide title
@@ -482,8 +538,8 @@ Speaker notes go here
 END
 )
 
-  echo "$CODE" >> "$output"
-  echo -e "" >> "$output"
+  echo "$CODE" >> "$markdown"
+  echo -e "" >> "$markdown"
 
 done
 
@@ -492,8 +548,8 @@ SECTION=$(cat <<-END
 END
 )
 
-echo "$SECTION" >> "$output"
-echo -e "" >> "$output"
+echo "$SECTION" >> "$markdown"
+echo -e "" >> "$markdown"
 
 SINGLE_BULLETED_LIST=$(cat <<-END
 ## Slide title
@@ -512,5 +568,37 @@ Speaker notes go here
 END
 )
 
-echo "$SINGLE_BULLETED_LIST" >> "$output"
-echo -e "" >> "$output"
+echo "$SINGLE_BULLETED_LIST" >> "$markdown"
+
+fi
+
+pptx=${output}/slides.pptx
+
+if [ -f "${pptx}" ] && ! $force; then
+  echo "'${pptx}' has already been created."
+  echo "Use '--force' to overwrite."
+else
+
+echo "Generating pptx file '$pptx'."
+
+pandoc "$markdown" -o "$pptx"
+
+fi
+
+#Generate an additional slide set for each template
+find "${output}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) | while IFS= read -r template; do
+  file=$(basename -- "$template")
+  extension="${file##*.}"
+  filename="${file%.*}"
+
+  pptx=${output}/slides_${filename}.pptx
+  echo "Generating pptx using template '$template'."
+  if [ -f "${pptx}" ] && ! $force; then
+    echo "'${pptx}' has already been created."
+    echo "Use '--force' to overwrite."
+    continue
+  fi
+  pandoc "$markdown" -o "$pptx" --reference-doc "$template"
+done
+
+echo "Done. Check '$output' for slides."
