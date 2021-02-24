@@ -79,10 +79,13 @@ fi
 #process urls in file input/sites.txt
 #save each html file as png using pageres
 while IFS='' read -r url || [ -n "$url" ]; do
+  if [ -z "$url" ]; then
+    continue
+  fi
   case "$url" in \#*) continue ;; esac
-  echo "Processing URL '$url'"
+  echo "Generating image for URL '$url'"
   output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
-  if [ -f "${output}/includes/${output_name}.png" ] && [ ! $overwrite ]; then
+  if [ -f "${output}/includes/${output_name}.png" ] && ! $overwrite; then
     echo "$url has already been processed--skipping"
     continue
   fi
@@ -90,84 +93,124 @@ while IFS='' read -r url || [ -n "$url" ]; do
   pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
 done < "${input}/sites.txt"
 
-exit
-
 #convert dot files to graphs using graphviz
 #dot -Tpdf graph2.dot -o graph2.pd
-find "${includes}" -mindepth 1 -maxdepth 1 -name "*.dot" -type f | while IFS= read -r dot; do
-  echo "Processing file '$dot'"
-  if [ -f "${dot}.pdf" ]; then
-    echo "$dot has already been processed--skipping"
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f | while IFS= read -r dot; do
+  file=$(basename -- "$dot")
+  extension="${file##*.}"
+  filename="${file%.*}" 
+  echo "Generating image for file '$dot'"
+  if [ -f "${output}/includes/${file}.pdf" ] && ! $overwrite; then
+    echo "'$dot' has already been processed--skipping"
     continue
   fi
-  dot -Tpdf "$dot" -o "${dot}.pdf"
+  dot -Tpdf "$dot" -o "$output/includes/${file}.pdf"
 done
 
 #convert csv files to Markdown using csv2md
 #csv2md -p data.csv > output.md
-find "${includes}" -mindepth 1 -maxdepth 1 -name "*.csv" -type f | while IFS= read -r csv; do
-  echo "Processing file '$csv'"
-  if [ -f "${csv}.md" ]; then
-    echo "$csv has already been processed--skipping"
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read -r csv; do
+  file=$(basename -- "$csv")
+  extension="${file##*.}"
+  filename="${file%.*}" 
+  echo "Generating Markdown for file '$csv'"
+  if [ -f "${output}/includes/${file}.md" ] && ! $overwrite; then
+    echo "'$csv' has already been processed--skipping"
     continue
   fi
   #extend short rows to length of first row
-  awk -F, -v OFS="," 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$csv" > "${csv}.temp" 
-  csv2md -p < "${csv}.temp" > "${csv}.md"
+  awk -F, -v OFS="," 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$csv" > "${output}/includes/${file}.temp" 
+  csv2md -p < "${output}/includes/${file}.temp" > "${output}/includes/${file}.md"
+  rm -f "${output}/includes/${file}.temp"
 done
 
-#convert pdf files in includes to png
-find "${includes}" -mindepth 1 -maxdepth 1 -name "*.pdf" -type f | while IFS= read -r pdf; do
-  echo "Processing file '$pdf'"
-  if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ]; then
-    echo "$pdf has already been processed--skipping"
+#cp pdf files to output/includes
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f | while IFS= read -r pdf; do
+  file=$(basename -- "$pdf")
+  extension="${file##*.}"
+  filename="${file%.*}"
+  echo "Copying file '$pdf'"
+  if [ -f "${output}/includes/${file}" ] && ! $overwrite; then
+    echo "$'pdf' has already been copied--skipping"
     continue
   fi
-  pdftoppm -f 1 -l 1 -png "$pdf" "$pdf" -r 600
+  cp "$pdf" "${output}/includes/${file}"
 done
 
-#convert other jpg and jpeg images to png
-find "${includes}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jpeg \) | while IFS= read -r jpg; do
-  echo "Processing file '$jpg'"
-  if [ -f "${jpg}.png" ]; then
-    echo "$jpg has already been processed--skipping"
+#convert pdf files to png
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f | while IFS= read -r pdf; do
+  echo "Generating image for '$pdf'"
+  if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ] && ! $overwrite; then
+    echo "'$pdf' has already been processed--skipping"
     continue
   fi
-  convert "$jpg" "${jpg}.png"
+  pdftoppm -f 1 -l 1 -png "$pdf" "${pdf}" -r 600
+done
+
+#convert jpg and jpeg images to png
+find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jpeg \) | while IFS= read -r jpg; do
+  file=$(basename -- "$jpg")
+  extension="${file##*.}"
+  filename="${file%.*}"
+  echo "Converting '$jpg'"
+  if [ -f "${output}/includes/${file}.png" ] && ! $overwrite; then
+    echo "'$jpg' has already been processed--skipping"
+    continue
+  fi
+  convert "$jpg" "${output}/includes/${file}.png"
+done
+
+#convert svg images to png
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f | while IFS= read -r svg; do
+  file=$(basename -- "$svg")
+  extension="${file##*.}"
+  filename="${file%.*}"
+  echo "Converting '$svg'"
+  if [ -f "${output}/includes/${file}.png" ] && ! $overwrite; then
+    echo "'$svg' has already been processed--skipping"
+    continue
+  fi
+  convert "$svg" "${output}/includes/${file}.png"
 done
 
 #crop images
-if [ ! -d "${includes}/cropped" ]; then
-  mkdir "${includes}/cropped"
+if [ ! -d "${output}/includes/cropped" ]; then
+  mkdir "${output}/includes/cropped"
 fi
 
-find "${includes}" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
-  echo "Processing file '$png'"
-  p=$(basename "$png")
-  if [ -f "${includes}/cropped/${p}" ]; then
-    echo "$png has already been processed--skipping"
+find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
+  file=$(basename -- "$png")
+  extension="${file##*.}"
+  filename="${file%.*}"
+  echo "Cropping '$png'"
+  if [ -f "${output}/includes/cropped/${file}" ] && ! $overwrite; then
+    echo "'$png' has already been processed--skipping"
     continue
   fi
-  convert "$png" -trim -bordercolor White -border 30x30 "${includes}/cropped/${p}"
+  convert "$png" -trim -bordercolor White -border 30x30 "${output}/includes/cropped/${file}"
 done
 
 #resize images
 #PowerPoint slide is 13.33 inches wide at 16:9 setting
 #If images are 150 DPI then that is 2000 pixels in width
 #If images are 300 DPI then that is 4000 pixels in width
-if [ ! -d "${includes}/cropped/resized" ]; then
-  mkdir "${includes}/cropped/resized"
+if [ ! -d "${output}/includes/cropped/resized" ]; then
+  mkdir "${output}/includes/cropped/resized"
 fi
 
-find "${includes}/cropped" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
-  echo "Processing file '$png'"
-  p=$(basename "$png")
-  if [ -f "${includes}/cropped/resized/${p}" ]; then
-    echo "$png has already been processed--skipping"
+find "${output}/includes/cropped" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
+  file=$(basename -- "$png")
+  extension="${file##*.}"
+  filename="${file%.*}"
+  echo "Resizing '$png'"
+  if [ -f "${output}/includes/cropped/resized/${file}" ] && ! $overwrite; then
+    echo "'$png' has already been processed--skipping"
     continue
   fi
-  convert "$png" -resize 4000 "${includes}/cropped/resized/${p}"
+  convert "$png" -resize 4000 "${output}/includes/cropped/resized/${file}"
 done
+
+exit
 
 #generate Markdown output
 TITLE=$(cat <<-END
