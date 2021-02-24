@@ -1,0 +1,11 @@
+Program, Version, Purpose
+Prokka, 1.14.5, Genome annotation
+FastQC, 0.11.9, Illumina read quality assessment
+Snippy, 4.6.0, Genome comparisons
+CGView, 2.0.2, Genome visualization
+SPAdes, 3.12.0, Genome assembly
+Quast, 5.0.2, Genome assembly quality assessment
+NUCmer, 3.1, Genome alignment
+Circos, 0.69-8, Genome visualization
+Infoseq, 6.6.0.0, Sequence summary statistics
+R, 3.6.2, Visualizing overlaps between variant sets
