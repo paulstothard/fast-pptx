@@ -3,6 +3,8 @@
 #to see supported syntax highlighting
 #pandoc --list-highlight-languages
 
+overwrite=false
+
 function error_exit() {
     echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
     exit 1
@@ -11,36 +13,41 @@ function error_exit() {
 function usage() {
     echo "
 USAGE:
-   fast-pptx.sh -i DIR
+   fast-pptx.sh -i DIR -o DIR [Options]
 
 DESCRIPTION:
    Quickly make a PowerPoint presentation from a directory of URLs, images,
    PDFs, CSV files, and code snippets.
 
 REQUIRED ARGUMENTS:
-   -i, --includes DIR
+   -i, --input DIR
       Directory of presentation content.
-   -o, --output FILE
-      Markdown file to create.
+   -o, --output DIR
+      Directory for output files.
 OPTIONAL ARGUMENTS:
+   --overwrite
+      Overwrite existing output.
    -h, --help
       Show this message
 
 EXAMPLE:
-   fast-pptx.sh -i includes  
+   fast-pptx.sh -i input_dir -o output_dir  
 "
 }
 
 while [ "$1" != "" ]; do
     case $1 in
-    -i | --includes)
+    -i | --input)
         shift
-        includes=$1
+        input=$1
         ;;
     -o | --output)
         shift
         output=$1
         ;;
+    --overwrite)
+        overwrite=true
+        ;;    
     -h | --help)
         usage
         exit
@@ -53,27 +60,37 @@ while [ "$1" != "" ]; do
     shift
 done
 
-if [ -z "$includes" ]; then
-    error_exit "Please use '-i' to specify an includes directory. Use '-h' for help."
+if [ -z "$input" ]; then
+    error_exit "Please use '-i' to specify an input directory. Use '-h' for help."
 fi
 
 if [ -z "$output" ]; then
-    error_exit "Please use '-o' to specify an output file. Use '-h' for help."
+    error_exit "Please use '-o' to specify an output directory. Use '-h' for help."
 fi
 
-#process urls in file includes/urls.txt
+if [ ! -d "${output}" ]; then
+  mkdir "${output}"
+fi
+
+if [ ! -d "${output}/includes" ]; then
+  mkdir "${output}/includes"
+fi
+
+#process urls in file input/sites.txt
 #save each html file as png using pageres
-#sed -E may be OSX specific
 while IFS='' read -r url || [ -n "$url" ]; do
+  case "$url" in \#*) continue ;; esac
   echo "Processing URL '$url'"
   output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
-  if [ -f "${includes}/${output_name}.pageres.png" ]; then
+  if [ -f "${output}/includes/${output_name}.png" ] && [ ! $overwrite ]; then
     echo "$url has already been processed--skipping"
     continue
   fi
   #these settings give a final image of width 4485 pixels
-  pageres "$url" 897x1090 --crop --scale=5 --filename="${includes}/${output_name}.pageres"
-done < "${includes}/urls.txt"
+  pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
+done < "${input}/sites.txt"
+
+exit
 
 #convert dot files to graphs using graphviz
 #dot -Tpdf graph2.dot -o graph2.pd
