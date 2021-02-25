@@ -29,7 +29,7 @@ OPTIONAL ARGUMENTS:
    -f, --force
       Overwrite existing slides.md and pptx files in output directory.
    -r, --reprocess
-      Reprocess input files even if output files exist in output directory.
+      Reprocess input files even if conversion files exist in output directory.
    -h, --help
       Show this message
 
