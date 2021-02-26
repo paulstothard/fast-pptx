@@ -74,6 +74,22 @@ if [ -z "$output" ]; then
     error_exit "Please use '-o' to specify an output directory. Use '-h' for help."
 fi
 
+function end_test() {
+    echo "
+  'Check environment' test failed
+" >&2
+    exit 1
+}
+
+for j in pageres dot csv2md pdftoppm convert svgexport pandoc; do
+    if ! command -v $j &>/dev/null; then
+        echo "
+  '$j' is required but not installed." >&2
+
+        end_test
+    fi
+done
+
 if [ ! -d "${output}" ]; then
   mkdir "${output}"
 fi
