@@ -47,30 +47,6 @@ outdir
         ├── resized
 ```
 
-### Docker
-
-The easiest way to run **fast-pptx** is to use the Docker image.
-
-Pull the Docker image:
-
-```bash
-docker pull pstothard/fast-pptx
-```
-
-Download a sample input directory:
-
-```bash
-to-do
-```
-
-Run the Docker image and use to create a file:
-
-```bash
-docker run --rm -v "$(pwd)":/dir -w /dir pstothard/fast-pptx fast-pptx.sh -i sample_input -o sample_output
-```
-
-The `sample_output` directory is written to the current directory on the host system and will contain the resulting PowerPoint presentations.
-
 ### Install
 
 **fast-pptx** requires the following:
@@ -83,16 +59,33 @@ The `sample_output` directory is written to the current directory on the host sy
 * [poppler](https://poppler.freedesktop.org)
 * [svgexport](https://github.com/shakiba/svgexport)
 
+On macOS these can be installed as follows:
+
+```bash
+brew install graphviz
+brew install imagemagick
+brew install node
+brew install pandoc
+brew install poppler
+npm install -g csv2md
+npm install -g pageres-cli
+npm install -g svgexport
+```
 
 Download the script and test data [here](https://github.com/paulstothard/fast-pptx/releases/) or clone the repository:
 
 ```bash
 git clone git@github.com:paulstothard/fast-pptx.git
-cd cgview
 ```
 
+To test `fast-pptx.sh` on your system:
 
+```bash
+cd fast-pptx
+./fast-pptx.sh -i sample_input -o sample_output
+```
 
+Add `fast-pptx.sh` to `PATH` or continue to run it by specifying the full path to `fast-pptx.sh`.
 
 ### Command-line options
 
