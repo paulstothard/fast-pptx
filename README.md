@@ -24,7 +24,7 @@ The slides can then be edited in PowerPoint to change the order of slides, add o
 
 | Type                   | Filename                                                 | Converted to                          | PowerPoint content generated                                                                        |
 |------------------------|----------------------------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------------|
-| code snippets          | \*.*language* for example \*.bash \*.perl \*.python \*.r | not converted                         | two slides: one with syntax-highlighted code and one with syntax-highlighted code and a bullet list |
+| code snippet           | \*.*language* for example \*.bash \*.perl \*.python \*.r | not converted                         | two slides: one with syntax-highlighted code and one with syntax-highlighted code and a bullet list |
 | comma-separated values | \*.csv                                                   | Markdown table                        | one slide per csv file showing the content as a table                                               |
 | DOT file for Graphviz  | \*.dot                                                   | pdf and then cropped and resized png  | two slides: one with the png and one with the png and a bullet list                                 |
 | gif file               | \*.gif                                                   | not converted                         | two slides: one with the gif and one with the gif and a bullet list                                 |
@@ -72,20 +72,23 @@ npm install -g pageres-cli
 npm install -g svgexport
 ```
 
-Download the script and test data [here](https://github.com/paulstothard/fast-pptx/releases/) or clone the repository:
+Clone the repository and test `fast-pptx.sh`:
 
 ```bash
 git clone git@github.com:paulstothard/fast-pptx.git
-```
-
-To test `fast-pptx.sh` on your system:
-
-```bash
-cd fast-pptx
+cd fast-pptx/scripts
 ./fast-pptx.sh -i sample_input -o sample_output
 ```
 
-Add `fast-pptx.sh` to `PATH` or continue to run it by specifying the full path to `fast-pptx.sh`.
+Or download a [release](https://github.com/paulstothard/fast-pptx/releases/) and test `fast-pptx.sh`, e.g.:
+
+```bash
+unzip fast-pptx-1.0.1.zip
+cd fast-pptx-1.0.1/scripts
+./fast-pptx.sh -i sample_input -o sample_output
+```
+
+Add `fast-pptx.sh` to `PATH` or continue to specify the path to `fast-pptx.sh` to run.
 
 ### Command-line options
 
@@ -113,7 +116,3 @@ OPTIONAL ARGUMENTS:
 EXAMPLE:
    fast-pptx.sh -i input_dir -o output_dir  
 ```
-
-### 
-
-
