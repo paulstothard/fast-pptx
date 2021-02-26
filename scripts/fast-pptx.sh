@@ -121,7 +121,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read
     continue
   fi
   #extend short rows to length of first row
-  awk -F, -v OFS="," 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$csv" > "${output}/includes/${file}.temp" 
+  awk -F, -v OFS="," 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$csv" > "${output}/includes/${file}.temp"
   csv2md -p < "${output}/includes/${file}.temp" > "${output}/includes/${file}.md"
   rm -f "${output}/includes/${file}.temp"
 done
@@ -474,7 +474,7 @@ END
 done
 
 #Generate a single-column and two-column slide for each code file
-find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -type f | while IFS= read -r code; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -type f | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
