@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-#to see supported syntax highlighting
-#pandoc --list-highlight-languages
-
 force=false
 reprocess=false
 
