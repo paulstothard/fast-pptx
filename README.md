@@ -16,7 +16,7 @@ Place your source files into a single directory and then run **fast-pptx**:
 ./fast-pptx.sh -i input-directory -o output-directory
 ```
 
-The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If PowerPoint templates are included in the input directory, additional presentations are created, one for each tempalte.
+The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If PowerPoint templates are included in the input directory, additional presentations are created, one for each template.
 
 The slides can then be edited in PowerPoint to change the order of slides, add or modify text, adjust font sizes, and choose designs for specific slides (using PowerPoint Designer by choosing **Design > Design Ideas** on the ribbon). The file size can then be reduced using **File > Compress Pictures...**.
 
