@@ -10,7 +10,7 @@ Paul Stothard
 
 ### Quick start
 
-Place your source files into a single directory and then run **fast-pptx**:
+[Install dependencies and download **fast-pptx**](#install), place your source files into a single directory and then run **fast-pptx**:
 
 ```bash
 ./fast-pptx.sh -i input-directory -o output-directory
