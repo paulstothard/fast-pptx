@@ -93,20 +93,22 @@ fi
 
 #process urls in file input/sites.txt
 #save each html file as png using pageres
-while IFS='' read -r url || [ -n "$url" ]; do
-  if [ -z "$url" ]; then
-    continue
-  fi
-  case "$url" in \#*) continue ;; esac
-  echo "Generating image for URL '$url'."
-  output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
-  if [ -f "${output}/includes/${output_name}.png" ] && ! $reprocess; then
-    echo "'$url' has already been processed--skipping."
-    continue
-  fi
-  #these settings give a final image of width 4485 pixels
-  pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
-done < "${input}/sites.txt"
+if [ -f "${input}/sites.txt" ]; then
+  while IFS='' read -r url || [ -n "$url" ]; do
+    if [ -z "$url" ]; then
+      continue
+    fi
+    case "$url" in \#*) continue ;; esac
+    echo "Generating image for URL '$url'."
+    output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
+    if [ -f "${output}/includes/${output_name}.png" ] && ! $reprocess; then
+      echo "'$url' has already been processed--skipping."
+      continue
+    fi
+    #these settings give a final image of width 4485 pixels
+    pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
+  done < "${input}/sites.txt"
+fi
 
 #convert dot files to graphs using graphviz
 #dot -Tpdf graph2.dot -o graph2.pdf
