@@ -242,10 +242,55 @@ END
 echo "$SECTION" >> "$markdown"
 echo -e "" >> "$markdown"
 
-SINGLE_BULLETED_LIST=$(cat <<-END
+SINGLE_COLUMN_TEXT=$(cat <<-END
 ## Slide title
 
-Single bulleted list:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+::: notes
+
+Speaker notes go here
+
+:::
+END
+)
+
+echo "$SINGLE_COLUMN_TEXT" >> "$markdown"
+echo -e "" >> "$markdown"
+
+TWO_COLUMNS_WITH_TEXT=$(cat <<-END
+## Slide title
+
+:::::::::::::: {.columns}
+
+::: {.column width="50%"}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+:::
+
+::: {.column width="50%"}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+:::
+
+::::::::::::::
+
+::: notes
+
+Speaker notes go here
+
+:::
+END
+)
+
+echo "$TWO_COLUMNS_WITH_TEXT" >> "$markdown"
+echo -e "" >> "$markdown"
+
+
+SINGLE_BULLETED_LIST=$(cat <<-END
+## Slide title
 
 - list item
 - list item
@@ -264,8 +309,6 @@ echo -e "" >> "$markdown"
 
 SINGLE_BULLETED_LIST_WITH_INDENTING=$(cat <<-END
 ## Slide title
-
-Single bulleted list:
 
 - list item
   - list item
@@ -286,8 +329,6 @@ echo -e "" >> "$markdown"
 
 SINGLE_ORDERED_LIST_WITH_INDENTING=$(cat <<-END
 ## Slide title
-
-Single ordered list:
 
 1. list item
    1. list item
@@ -314,8 +355,6 @@ TWO_COLUMNS_WITH_LISTS=$(cat <<-END
 
 ::: {.column width="50%"}
 
-Left column:
-
 - list item
   - list item
   - list item
@@ -325,8 +364,6 @@ Left column:
 :::
 
 ::: {.column width="50%"}
-
-Right column:
 
 1. list item
    1. list item
@@ -375,8 +412,6 @@ END
 :::::::::::::: {.columns}
 
 ::: {.column width="50%"}
-
-Left column:
 
 - Bullet
 - Bullet
@@ -432,8 +467,6 @@ END
 
 ::: {.column width="50%"}
 
-Left column:
-
 - Bullet
 - Bullet
 - Bullet
@@ -484,7 +517,7 @@ END
 
 done
 
-#Generate a single-column and two-column slide for each code file
+#Generate a single-column slide for each code file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -type f | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
@@ -515,43 +548,6 @@ END
   echo "$CODE" >> "$markdown"
   echo -e "" >> "$markdown"
 
-    CODE=$(cat <<-END
-## Slide title
-
-:::::::::::::: {.columns}
-
-::: {.column width="50%"}
-
-\`\`\`$extension
-$text
-\`\`\`
-
-:::
-
-::: {.column width="50%"}
-
-Right column:
-
-- Bullet
-- Bullet
-- Bullet
-
-:::
-
-::::::::::::::
-
-::: notes
-
-Speaker notes go here
-
-:::
-
-END
-)
-
-  echo "$CODE" >> "$markdown"
-  echo -e "" >> "$markdown"
-
 done
 
 SECTION=$(cat <<-END
@@ -564,8 +560,6 @@ echo -e "" >> "$markdown"
 
 SINGLE_BULLETED_LIST=$(cat <<-END
 ## Slide title
-
-Single bulleted list:
 
 - list item
 - list item
