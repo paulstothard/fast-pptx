@@ -138,7 +138,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read
 done
 
 #cp additional files that are needed in output/includes
-find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -type f | while IFS= read -r include_file; do
+find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -not -iname "*.tiff" -type f | while IFS= read -r include_file; do
   file=$(basename -- "$include_file")
   echo "Copying file '$include_file'."
   if [ -f "${output}/includes/${file}" ] && ! $reprocess; then
@@ -167,6 +167,17 @@ find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jp
     continue
   fi
   convert "$jpg" "${output}/includes/${file}.png"
+done
+
+#convert tiff images to png
+find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.tiff \) | while IFS= read -r tiff; do
+  file=$(basename -- "$tiff")
+  echo "Generating png for '$tiff'."
+  if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
+    echo "'$tiff' has already been processed--skipping."
+    continue
+  fi
+  convert "$tiff" "${output}/includes/${file}.png"
 done
 
 #convert svg images to png
@@ -518,7 +529,7 @@ END
 done
 
 #Generate a single-column slide for each code file
-find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -type f | while IFS= read -r code; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -type f | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
