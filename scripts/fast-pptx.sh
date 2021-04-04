@@ -28,7 +28,7 @@ OPTIONAL ARGUMENTS:
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
    -h, --help
-      Show this message
+      Show this message.
 
 EXAMPLE:
    fast-pptx.sh -i input_dir -o output_dir  
