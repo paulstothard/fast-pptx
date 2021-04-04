@@ -2,11 +2,9 @@
 
 Quickly make a PowerPoint presentation from a directory of URLs, images, PDFs, CSV files, and code snippets.
 
-
 ### Author
 
 Paul Stothard
-
 
 ### Quick start
 
@@ -22,20 +20,20 @@ The slides can then be edited in PowerPoint to change the order of slides, add o
 
 ### Supported source file types for the input directory
 
-| Type                   | Filename                                                                                                                     | Converted to                          | PowerPoint content generated                                                                        |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------------|
-| code snippet           | \*.*language* for example \*.bash \*.perl \*.python \*.r; use `pandoc --list-highlight-languages` to see supported languages | not converted                         | two slides: one with syntax-highlighted code and one with syntax-highlighted code and a bullet list |
-| comma-separated values | \*.csv                                                                                                                       | Markdown table                        | one slide per csv file showing the content as a table                                               |
-| DOT file for Graphviz  | \*.dot                                                                                                                       | pdf and then cropped and resized png  | two slides: one with the png and one with the png and a bullet list                                 |
-| gif file               | \*.gif                                                                                                                       | not converted                         | two slides: one with the gif and one with the gif and a bullet list                                 |
-| jpg file               | \*.jpg or jpeg                                                                                                               | cropped and resized png               | two slides: one with the png and one with the png and a bullet list                                 |
-| PowerPoint file        | \*.pptx                                                                                                                      | not converted                         | used to format the slides                                                                           |
-| PowerPoint template    | \*.potx                                                                                                                      | not converted                         | used to format the slides                                                                           |
-| pdf file               | \*.pdf                                                                                                                       | cropped and resized png               | two slides: one with the png and one with the png and a bullet list                                 |
-| png file               | \*.png                                                                                                                       | cropped and resized png               | two slides: one with the png and one with the png and a bullet list                                 |
-| svg file               | \*.svg                                                                                                                       | cropped and resized png               | two slides: one with the png and one with the png and a bullet list                                 |
-| tiff file              | \*.tiff                                                                                                                      | cropped and resized png               | two slides: one with the png and one with the png and a bullet list                                 |
-| URLs; one per line     | sites.txt                                                                                                                    | cropped and resized png for each site | two slides per web site: one with the png and one with the png and a bullet list                    |
+| Type                   | Filename                                                                                                                     | Converted to      | PowerPoint content generated                                                                        |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------|-------------------|-----------------------------------------------------------------------------------------------------|
+| code snippet           | \*.*language* for example \*.bash \*.perl \*.python \*.r; use `pandoc --list-highlight-languages` to see supported languages | not converted     | two slides: one with syntax-highlighted code and one with syntax-highlighted code and a bullet list |
+| comma-separated values | \*.csv                                                                                                                       | Markdown table    | one slide per csv file showing the content as a table                                               |
+| DOT file for Graphviz  | \*.dot                                                                                                                       | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| gif file               | \*.gif                                                                                                                       | not converted     | two slides: one with the gif and one with the gif and a bullet list                                 |
+| jpg file               | \*.jpg or jpeg                                                                                                               | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| PowerPoint file        | \*.pptx                                                                                                                      | not converted     | used to format the slides                                                                           |
+| PowerPoint template    | \*.potx                                                                                                                      | not converted     | used to format the slides                                                                           |
+| pdf file               | \*.pdf                                                                                                                       | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| png file               | \*.png                                                                                                                       | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| svg file               | \*.svg                                                                                                                       | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| tiff file              | \*.tiff                                                                                                                      | png               | two slides: one with the png and one with the png and a bullet list                                 |
+| URLs; one per line     | sites.txt                                                                                                                    | png for each site | two slides per web site: one with the png and one with the png and a bullet list                    |
 
 ### Output directory structure
 
@@ -44,8 +42,7 @@ outdir
 ├── slides.pptx
 ├── slides.md
 └── includes
-    ├── cropped
-        ├── resized
+    ├── resized
 ```
 
 ### Install

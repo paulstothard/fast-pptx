@@ -192,37 +192,41 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f | while IFS= read
   SVGEXPORT_TIMEOUT=60 svgexport "$svg" "${output}/includes/${file}.png" 4000:
 done
 
-#crop images
-if [ ! -d "${output}/includes/cropped" ]; then
-  mkdir "${output}/includes/cropped"
-fi
-
-find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
-  file=$(basename -- "$png")
-  echo "Cropping '$png'."
-  if [ -f "${output}/includes/cropped/${file}" ] && ! $reprocess; then
-    echo "'$png' has already been processed--skipping."
-    continue
-  fi
-  convert "$png" -trim -bordercolor White -border 30x30 "${output}/includes/cropped/${file}"
-done
-
 #resize images
 #PowerPoint slide is 13.33 inches wide at 16:9 setting
 #If images are 150 DPI then that is 2000 pixels in width
 #If images are 300 DPI then that is 4000 pixels in width
-if [ ! -d "${output}/includes/cropped/resized" ]; then
-  mkdir "${output}/includes/cropped/resized"
+if [ ! -d "${output}/includes/resized" ]; then
+  mkdir "${output}/includes/resized"
 fi
 
-find "${output}/includes/cropped" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
   file=$(basename -- "$png")
   echo "Resizing '$png'."
-  if [ -f "${output}/includes/cropped/resized/${file}" ] && ! $reprocess; then
+  if [ -f "${output}/includes/resized/${file}" ] && ! $reprocess; then
     echo "'$png' has already been processed--skipping."
     continue
   fi
-  convert "$png" -resize 4000 "${output}/includes/cropped/resized/${file}"
+  convert "$png" -resize 4000 "${output}/includes/resized/${file}"
+done
+
+#copy template files
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+find "${DIR}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) -type f | while IFS= read -r template; do
+  file=$(basename -- "$template")
+  echo "Copying '$template'."
+  if [ -f "${output}/includes/${file}" ]; then
+    echo "'$template' has already been copied--skipping."
+    continue
+  fi
+  cp "$template" "${output}/includes/${file}"
 done
 
 markdown=${output}/slides.md
@@ -399,7 +403,7 @@ echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
 echo -e "" >> "$markdown"
 
 #Generate single-column and two-column slide for each image
-find "${output}/includes/cropped/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f | while IFS= read -r png; do
+find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f | while IFS= read -r png; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
