@@ -90,11 +90,11 @@ for j in pageres dot csv2md pdftoppm convert svgexport pandoc; do
 done
 
 if [ ! -d "${output}" ]; then
-  mkdir "${output}"
+  mkdir -p "${output}"
 fi
 
 if [ ! -d "${output}/includes" ]; then
-  mkdir "${output}/includes"
+  mkdir -p "${output}/includes"
 fi
 
 #process urls in file input/sites.txt
@@ -203,7 +203,7 @@ done
 #If images are 150 DPI then that is 2000 pixels in width
 #If images are 300 DPI then that is 4000 pixels in width
 if [ ! -d "${output}/includes/resized" ]; then
-  mkdir "${output}/includes/resized"
+  mkdir -p "${output}/includes/resized"
 fi
 
 find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
