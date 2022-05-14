@@ -2,6 +2,7 @@
 
 force=false
 reprocess=false
+two_column=false
 
 function error_exit() {
     echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -27,6 +28,8 @@ OPTIONAL ARGUMENTS:
       Overwrite existing slides.md and pptx files in output directory.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
+   -t, --two-column
+      For slides containing images generate additional two-column slides.
    -h, --help
       Show this message.
 
@@ -50,7 +53,10 @@ while [ "$1" != "" ]; do
         ;;
     -r | --reprocess)
         reprocess=true
-        ;;    
+        ;;
+    -t | --two-column)
+        two_column=true
+        ;;
     -h | --help)
         usage
         exit
@@ -402,7 +408,7 @@ END
 echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
 echo -e "" >> "$markdown"
 
-#Generate single-column and two-column slide for each image
+#Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f | while IFS= read -r png; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
@@ -421,6 +427,7 @@ END
   echo "$SINGLE_IMAGE" >> "$markdown"
   echo -e "" >> "$markdown"
 
+if $two_column; then
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
@@ -453,10 +460,11 @@ END
 
   echo "$SINGLE_IMAGE" >> "$markdown"
   echo -e "" >> "$markdown"
+fi
 
 done
 
-#Generate single-column and two-column slide for each image
+#Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f | while IFS= read -r gif; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
@@ -475,6 +483,7 @@ END
   echo "$SINGLE_IMAGE" >> "$markdown"
   echo -e "" >> "$markdown"
 
+if $two_column; then
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
@@ -507,6 +516,7 @@ END
 
   echo "$SINGLE_IMAGE" >> "$markdown"
   echo -e "" >> "$markdown"
+fi
 
 done
 
