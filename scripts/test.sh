@@ -1,7 +1,3 @@
 #!/bin/bash
-
-if [ ! -d "sample_output" ]; then
-  mkdir "sample_output"
-fi
-
-./fast-pptx.sh -i sample_input -o sample_output
+./fast-pptx.sh -r -f -i sample_input -o sample_output
+./fast-pptx.sh -r -f -t -i sample_input -o sample_output_two-column
