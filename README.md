@@ -108,9 +108,11 @@ OPTIONAL ARGUMENTS:
       Overwrite existing slides.md and pptx files in output directory.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
+   -t, --two-column
+      For slides containing images generate additional two-column slides.
    -h, --help
       Show this message.
 
 EXAMPLE:
-   fast-pptx.sh -i input_dir -o output_dir  
+   fast-pptx.sh -i input_dir -o output_dir 
 ```
