@@ -118,7 +118,7 @@ fi
 
 #convert dot files to graphs using graphviz
 #dot -Tpdf graph2.dot -o graph2.pdf
-find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f | while IFS= read -r dot; do
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f -exec ls -rt "{}" + | while IFS= read -r dot; do
   file=$(basename -- "$dot")
   echo "Generating pdf for file '$dot'."
   if [ -f "${output}/includes/${file}.pdf" ] && ! $reprocess; then
@@ -130,7 +130,7 @@ done
 
 #convert csv files to Markdown using csv2md
 #csv2md -p data.csv > output.md
-find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read -r csv; do
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f -exec ls -rt "{}" + | while IFS= read -r csv; do
   file=$(basename -- "$csv")
   echo "Generating Markdown for file '$csv'."
   if [ -f "${output}/includes/${file}.md" ] && ! $reprocess; then
@@ -144,7 +144,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f | while IFS= read
 done
 
 #cp additional files that are needed in output/includes
-find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -not -iname "*.tiff" -type f | while IFS= read -r include_file; do
+find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -not -iname "*.tiff" -type f -exec ls -rt "{}" + | while IFS= read -r include_file; do
   file=$(basename -- "$include_file")
   echo "Copying file '$include_file'."
   if [ -f "${output}/includes/${file}" ] && ! $reprocess; then
@@ -155,7 +155,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.c
 done
 
 #convert pdf files to png
-find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f | while IFS= read -r pdf; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f -exec ls -rt "{}" + | while IFS= read -r pdf; do
   echo "Generating png for '$pdf'."
   if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ] && ! $reprocess; then
     echo "'$pdf' has already been processed--skipping."
@@ -187,7 +187,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.tiff \) | while IFS
 done
 
 #convert svg images to png
-find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f | while IFS= read -r svg; do
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f -exec ls -rt "{}" + | while IFS= read -r svg; do
   file=$(basename -- "$svg")
   echo "Generating png for '$svg'."
   if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
@@ -206,7 +206,7 @@ if [ ! -d "${output}/includes/resized" ]; then
   mkdir -p "${output}/includes/resized"
 fi
 
-find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f | while IFS= read -r png; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
   file=$(basename -- "$png")
   echo "Resizing '$png'."
   if [ -f "${output}/includes/resized/${file}" ] && ! $reprocess; then
@@ -225,7 +225,7 @@ while [ -h "$SOURCE" ]; do
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-find "${DIR}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) -type f | while IFS= read -r template; do
+find "${DIR}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
   file=$(basename -- "$template")
   echo "Copying '$template'."
   if [ -f "${output}/includes/${file}" ]; then
@@ -409,7 +409,7 @@ echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
 echo -e "" >> "$markdown"
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
-find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f | while IFS= read -r png; do
+find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
@@ -465,7 +465,7 @@ fi
 done
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
-find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f | while IFS= read -r gif; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f -exec ls -rt "{}" + | while IFS= read -r gif; do
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
@@ -521,7 +521,7 @@ fi
 done
 
 #Generate a slide for each Markdown file
-find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f | while IFS= read -r md; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f -exec ls -rt "{}" + | while IFS= read -r md; do
   text=$(<"$md")
   TABLE=$(cat <<-END
 ## Slide title
@@ -543,7 +543,7 @@ END
 done
 
 #Generate a single-column slide for each code file
-find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -type f | while IFS= read -r code; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
