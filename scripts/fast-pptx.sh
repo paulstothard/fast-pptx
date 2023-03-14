@@ -165,7 +165,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f -exec l
 done
 
 #convert jpg and jpeg images to png
-find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jpeg \) | while IFS= read -r jpg; do
+find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.jpg -o -iname \*.jpeg \) -type f -exec ls -rt "{}" + | while IFS= read -r jpg; do
   file=$(basename -- "$jpg")
   echo "Generating png for '$jpg'."
   if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
@@ -176,7 +176,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.jpg -o -iname \*.jp
 done
 
 #convert tiff images to png
-find "${input}" -mindepth 1 -maxdepth 1 -type f \( -iname \*.tiff \) | while IFS= read -r tiff; do
+find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.tiff \) -type f -exec ls -rt "{}" + | while IFS= read -r tiff; do
   file=$(basename -- "$tiff")
   echo "Generating png for '$tiff'."
   if [ -f "${output}/includes/${file}.png" ] && ! $reprocess; then
@@ -225,7 +225,7 @@ while [ -h "$SOURCE" ]; do
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-find "${DIR}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
+find "${DIR}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
   file=$(basename -- "$template")
   echo "Copying '$template'."
   if [ -f "${output}/includes/${file}" ]; then
@@ -616,7 +616,7 @@ pandoc "$markdown" -o "$pptx"
 fi
 
 #Generate an additional slide set for each template
-find "${output}/includes" -mindepth 1 -maxdepth 1 -type f \( -iname \*.potx -o -iname \*.pptx \) | while IFS= read -r template; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
   file=$(basename -- "$template")
   extension="${file##*.}"
   filename="${file%.*}"
