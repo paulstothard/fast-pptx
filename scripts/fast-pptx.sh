@@ -218,7 +218,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f -exec ls
   convert "$png" -resize 4000 "${output}/includes/resized/${file}"
 done
 
-#copy template files
+#copy .potx and .pptx template files
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
@@ -238,6 +238,7 @@ find "${DIR}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pp
 done
 
 markdown=${output}/slides.md
+markdown_code_blocks=${output}/slides_code_blocks.md
 
 if [ -f "${markdown}" ] && ! $force; then
   echo "'${markdown}' has already been created."
@@ -257,6 +258,9 @@ END
 echo "$TITLE" > "$markdown"
 echo -e "" >> "$markdown"
 
+echo "$TITLE" > "$markdown_code_blocks"
+echo -e "" >> "$markdown_code_blocks"
+
 SECTION=$(cat <<-END
 # Section title
 END
@@ -265,6 +269,9 @@ END
 echo "$SECTION" >> "$markdown"
 echo -e "" >> "$markdown"
 
+echo "$SECTION" >> "$markdown_code_blocks"
+echo -e "" >> "$markdown_code_blocks"
+
 SINGLE_COLUMN_TEXT=$(cat <<-END
 ## Slide title
 
@@ -272,7 +279,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -288,13 +295,13 @@ TWO_COLUMNS_WITH_TEXT=$(cat <<-END
 
 ::: {.column width="50%"}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 :::
 
 ::: {.column width="50%"}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 :::
 
@@ -302,7 +309,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -321,7 +328,7 @@ SINGLE_BULLETED_LIST=$(cat <<-END
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -341,7 +348,7 @@ SINGLE_BULLETED_LIST_WITH_INDENTING=$(cat <<-END
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -362,7 +369,7 @@ SINGLE_ORDERED_LIST_WITH_INDENTING=$(cat <<-END
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -401,7 +408,7 @@ TWO_COLUMNS_WITH_LISTS=$(cat <<-END
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -419,7 +426,7 @@ find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
@@ -453,7 +460,7 @@ if $two_column; then
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
@@ -475,7 +482,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f -exec l
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
@@ -509,7 +516,7 @@ if $two_column; then
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
@@ -532,7 +539,7 @@ $text
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
@@ -565,15 +572,15 @@ $text
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 
 END
 )
 
-  echo "$CODE" >> "$markdown"
-  echo -e "" >> "$markdown"
+  echo "$CODE" >> "$markdown_code_blocks"
+  echo -e "" >> "$markdown_code_blocks"
 
 done
 
@@ -594,7 +601,7 @@ SINGLE_BULLETED_LIST=$(cat <<-END
 
 ::: notes
 
-Speaker notes go here
+Notes
 
 :::
 END
@@ -605,6 +612,7 @@ echo "$SINGLE_BULLETED_LIST" >> "$markdown"
 fi
 
 pptx=${output}/slides.pptx
+pptx_code_blocks=${output}/slides_code_blocks.pptx
 
 if [ -f "${pptx}" ] && ! $force; then
   echo "'${pptx}' has already been created."
@@ -613,24 +621,18 @@ else
 
 echo "Generating pptx file '$pptx'."
 
-pandoc "$markdown" -o "$pptx"
-
+#if "${output}/includes" contains "theme_code_blocks.pptx" and $markdown_code_blocks is not empty, generate pptx_code_blocks
+if [ -f "${output}/includes/theme_code_blocks.pptx" ] && [ -s "$markdown_code_blocks" ]; then
+  echo "Generating pptx file '$pptx_code_blocks'."
+  pandoc "$markdown_code_blocks" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "${output}/includes/theme_code_blocks.pptx"
 fi
 
-#Generate an additional slide set for each template
-find "${output}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
-  file=$(basename -- "$template")
-  extension="${file##*.}"
-  filename="${file%.*}"
+#generate pptx if "${output}/includes" contains "theme.pptx"
+if [ -f "${output}/includes/theme.pptx" ]; then
+  echo "Generating pptx file '$pptx'."
+  pandoc "$markdown" -o "$pptx" --reference-doc "${output}/includes/theme.pptx"
+fi
 
-  pptx=${output}/slides_${filename}.pptx
-  echo "Generating pptx using template '$template'."
-  if [ -f "${pptx}" ] && ! $force; then
-    echo "'${pptx}' has already been created."
-    echo "Use '--force' to overwrite."
-    continue
-  fi
-  pandoc "$markdown" -o "$pptx" --reference-doc "$template"
-done
+fi
 
 echo "Done. Check '$output' for slides."
