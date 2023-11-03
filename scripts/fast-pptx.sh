@@ -112,6 +112,8 @@ if [ -f "${input}/sites.txt" ]; then
       continue
     fi
     #these settings give a final image of width 4485 pixels
+    #first remove output file if it exists
+    rm -f "${output}/includes/${output_name}.png"
     pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
   done < "${input}/sites.txt"
 fi
