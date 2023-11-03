@@ -2,3 +2,4 @@ deploy
 sample_output
 sample_output_two-column
 .DS_Store
+*.code-workspace
