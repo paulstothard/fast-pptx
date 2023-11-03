@@ -14,9 +14,11 @@ Paul Stothard
 ./fast-pptx.sh -i input-directory -o output-directory
 ```
 
-The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If PowerPoint templates are included in the input directory, additional presentations are created, one for each template.
+The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If code snippets are included in the input directory, then a second presentations is created with the code snippets converted to syntax-highlighted code blocks.
 
 The slides can then be edited in PowerPoint to change the order of slides, add or modify text, adjust font sizes, and choose designs for specific slides (using PowerPoint Designer by choosing **Design > Design Ideas** on the ribbon). The file size can then be reduced using **File > Compress Pictures...**.
+
+To combine the content from the two presentations into a single presentation, open both presentations and then copy and paste slides from one presentation to the other. Click on the **Paste Options** button that appears after pasting and choose **Keep Source Formatting**.
 
 ### Supported source file types for the input directory
 
@@ -27,8 +29,6 @@ The slides can then be edited in PowerPoint to change the order of slides, add o
 | DOT file for Graphviz  | \*.dot                                                                                                                       | png and resized png               | two slides: one with the resized png and one with the resized png and a bullet list                 |
 | gif file               | \*.gif                                                                                                                       | not converted                     | two slides: one with the gif and one with the gif and a bullet list                                 |
 | jpg file               | \*.jpg or jpeg                                                                                                               | png and resized png               | two slides: one with the resized png and one with the resized png and a bullet list                 |
-| PowerPoint file        | \*.pptx                                                                                                                      | not converted                     | used to format the slides                                                                           |
-| PowerPoint template    | \*.potx                                                                                                                      | not converted                     | used to format the slides                                                                           |
 | pdf file               | \*.pdf                                                                                                                       | png and resized png               | two slides: one with the resized png and one with the resized png and a bullet list                 |
 | png file               | \*.png                                                                                                                       | resized png                       | two slides: one with the resized png and one with the resized png and a bullet list                 |
 | svg file               | \*.svg                                                                                                                       | png and resized png               | two slides: one with the resized png and one with the resized png and a bullet list                 |
@@ -41,6 +41,8 @@ The slides can then be edited in PowerPoint to change the order of slides, add o
 outdir
 ├── slides.pptx
 ├── slides.md
+├── slides_code_blocks.pptx
+├── slides_code_blocks.md
 └── includes
     ├── resized
 ```
