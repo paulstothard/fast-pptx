@@ -265,8 +265,10 @@ find "${DIR}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pp
   cp "$template" "${output}/includes/${file}"
 done
 
-markdown=${output}/slides.md
-markdown_code_blocks=${output}/slides_code_blocks.md
+markdown_file=slides.md
+markdown=${output}/${markdown_file}
+markdown_code_blocks_file=slides_code_blocks.md
+markdown_code_blocks=${output}/${markdown_code_blocks_file}
 
 if [ -f "${markdown}" ] && ! $force; then
   echo "'${markdown}' has already been created."
@@ -444,14 +446,20 @@ echo -e "" >> "$markdown"
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
+
+  # get the filename without the path
+  file=$(basename -- "$png")
+  # create the path to the file from in the output folder
+  png_in_output="./includes/resized/${file}"
+
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
-![]($png)
+![]($png_in_output)
 
 ::: notes
 
-Notes
+$png_in_output
 
 :::
 
@@ -477,7 +485,7 @@ if $two_column; then
 
 ::: {.column width="50%"}
 
-![]($png)
+![]($png_in_output)
 
 :::
 
@@ -485,7 +493,7 @@ if $two_column; then
 
 ::: notes
 
-Notes
+$png_in_output
 
 :::
 
@@ -500,14 +508,20 @@ done
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f -exec ls -rt "{}" + | while IFS= read -r gif; do
+
+  # get the filename without the path
+  file=$(basename -- "$gif")
+  # create the path to the file from in the output folder
+  gif_in_output="./includes/${file}"
+
   SINGLE_IMAGE=$(cat <<-END
 ## Slide title
 
-![]($gif)
+![]($gif_in_output)
 
 ::: notes
 
-Notes
+$gif_in_output
 
 :::
 
@@ -533,7 +547,7 @@ if $two_column; then
 
 ::: {.column width="50%"}
 
-![]($gif)
+![]($gif_in_output)
 
 :::
 
@@ -541,7 +555,7 @@ if $two_column; then
 
 ::: notes
 
-Notes
+$gif_in_output
 
 :::
 
@@ -556,6 +570,12 @@ done
 
 #Generate a slide for each Markdown file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f -exec ls -rt "{}" + | while IFS= read -r md; do
+
+  # get the filename without the path
+  file=$(basename -- "$md")
+  # create the path to the file from in the output folder
+  md_in_output="./includes/${file}"
+
   text=$(<"$md")
   TABLE=$(cat <<-END
 ## Slide title
@@ -564,7 +584,7 @@ $text
 
 ::: notes
 
-Notes
+$md_in_output
 
 :::
 
@@ -578,6 +598,12 @@ done
 
 #Generate a single-column slide for each code file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.mmd" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
+  
+  # get the filename without the path
+  file=$(basename -- "$code")
+  # create the path to the file from in the output folder
+  code_in_output="./includes/${file}"
+  
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
@@ -597,7 +623,7 @@ $text
 
 ::: notes
 
-Notes
+$code_in_output
 
 :::
 
@@ -611,28 +637,45 @@ done
 
 fi
 
-pptx=${output}/slides.pptx
-pptx_code_blocks=${output}/slides_code_blocks.pptx
+# store current directory
+current_dir=$(pwd)
 
-if [ -f "${pptx}" ] && ! $force; then
-  echo "'${pptx}' has already been created."
-  echo "Use '--force' to overwrite."
-else
+# change to output directory
+cd "$output"
+
+# generate pptx file using standard template
+pptx=slides.pptx
 
 echo "Generating pptx file '$pptx'."
 
-#if "${output}/includes" contains "theme_code_blocks.pptx" and $markdown_code_blocks is not empty, generate pptx_code_blocks
-if [ -f "${output}/includes/theme_code_blocks.pptx" ] && [ -s "$markdown_code_blocks" ]; then
-  echo "Generating pptx file '$pptx_code_blocks'."
-  pandoc "$markdown_code_blocks" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "${output}/includes/theme_code_blocks.pptx"
+# generate pptx if "./includes" contains "theme.pptx"
+if [ -f "./includes/theme.pptx" ]; then
+  # check if the output file exists and if $force is not true
+  if [ -f "${pptx}" ] && ! $force; then
+    echo "'${pptx}' has already been created."
+    echo "Use '--force' to overwrite."
+  else
+    echo "Generating pptx file '$pptx'."
+    pandoc "$markdown_file" -o "$pptx" --reference-doc "./includes/theme.pptx"
+  fi
 fi
 
-#generate pptx if "${output}/includes" contains "theme.pptx"
-if [ -f "${output}/includes/theme.pptx" ]; then
-  echo "Generating pptx file '$pptx'."
-  pandoc "$markdown" -o "$pptx" --reference-doc "${output}/includes/theme.pptx"
+# generate pptx file using code_blocks template
+pptx_code_blocks=slides_code_blocks.pptx
+
+# generate pptx if "./includes" contains "theme_code_blocks.pptx"
+if [ -f "./includes/theme_code_blocks.pptx" ]; then
+  # check if the output file exists and if $force is not true
+  if [ -f "${pptx_code_blocks}" ] && ! $force; then
+    echo "'${pptx_code_blocks}' has already been created."
+    echo "Use '--force' to overwrite."
+  else
+    echo "Generating pptx file '$pptx_code_blocks'."
+    pandoc "$markdown_code_blocks_file" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+  fi
 fi
 
-fi
+# change back to original directory
+cd "$current_dir"
 
 echo "Done. Check '$output' for slides."
