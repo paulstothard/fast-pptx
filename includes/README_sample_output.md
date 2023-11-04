@@ -40,6 +40,28 @@
 
 ![../includes/slide_19.png](../includes/slide_19.png)
 
+![../includes/slide_20.png](../includes/slide_20.png)
+
+![../includes/slide_21.png](../includes/slide_21.png)
+
+![../includes/slide_22.png](../includes/slide_22.png)
+
+![../includes/slide_23.png](../includes/slide_23.png)
+
+![../includes/slide_24.png](../includes/slide_24.png)
+
+![../includes/slide_25.png](../includes/slide_25.png)
+
+![../includes/slide_26.png](../includes/slide_26.png)
+
+![../includes/slide_27.png](../includes/slide_27.png)
+
+![../includes/slide_28.png](../includes/slide_28.png)
+
+![../includes/slide_29.png](../includes/slide_29.png)
+
+![../includes/slide_30.png](../includes/slide_30.png)
+
 ## Slides with Code Blocks
 
 ![../includes/slide_code_block_1.png](../includes/slide_code_block_1.png)
@@ -51,4 +73,12 @@
 ![../includes/slide_code_block_4.png](../includes/slide_code_block_4.png)
 
 ![../includes/slide_code_block_5.png](../includes/slide_code_block_5.png)
+
+![../includes/slide_code_block_6.png](../includes/slide_code_block_6.png)
+
+![../includes/slide_code_block_7.png](../includes/slide_code_block_7.png)
+
+![../includes/slide_code_block_8.png](../includes/slide_code_block_8.png)
+
+![../includes/slide_code_block_9.png](../includes/slide_code_block_9.png)
 
