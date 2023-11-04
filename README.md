@@ -1,6 +1,6 @@
 # fast-pptx
 
-Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, Graphviz DOT files, images, PDFs, and URLs. **fast-pptx** adds syntax highlighting to the code snippets, converts the CSV files to tables, renders the DOT files, creates high-resolution images from the PDFs, captures screenshots of the websites, and then adds the content to a PowerPoint presentation.
+Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** adds syntax highlighting to the code snippets, converts the CSV and TSV files to tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures screenshots of the websites, and then adds the content to a PowerPoint presentation.
 
 See the [sample output](includes/README_sample_output.md) produced from the included sample input files.
 
@@ -24,18 +24,20 @@ To combine the content from the two presentations into a single presentation, op
 
 ### Supported source file types for the input directory
 
-| Type                   | Filename                                                                                                                     | Converted to                      | PowerPoint content generated                                               |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|----------------------------------------------------------------------------|
-| code snippet           | \*.*language* for example \*.bash \*.perl \*.python \*.r; use `pandoc --list-highlight-languages` to see supported languages | not converted                     | one slide per code snippet file showing syntax-highlighted code            |
-| comma-separated values | \*.csv                                                                                                                       | Markdown table                    | one slide per csv file showing the content as a table                      |
-| DOT file for Graphviz  | \*.dot                                                                                                                       | png and resized png               | one slide per dot file showing the rendered graph                          |
-| gif file               | \*.gif                                                                                                                       | not converted                     | one slide per gif file showing the gif                                     |
-| jpg file               | \*.jpg or jpeg                                                                                                               | png and resized png               | one slide per jpg or jpeg file showing the resized png                     |
-| pdf file               | \*.pdf                                                                                                                       | png and resized png               | one slide per pdf file showing the resized png                             |
-| png file               | \*.png                                                                                                                       | resized png                       | one slide per png file showing the resized png                             |
-| svg file               | \*.svg                                                                                                                       | png and resized png               | one slide per svg file showing the resized png                             |
-| tiff file              | \*.tiff                                                                                                                      | png and resized png               | one slide per tiff file showing the resized png                            |
-| URLs; one per line     | sites.txt                                                                                                                    | png and resized png for each site | one slide per web site URL showing the resized png screenshot for the site |
+| Type                  | Filename        | Converted to                      | PowerPoint Content Generated                                               |
+|-----------------------|-----------------|-----------------------------------|----------------------------------------------------------------------------|
+| Code Snippet          | *.<language>    | Not Converted                     | One slide per code snippet file showing syntax-highlighted code            |
+| CSV File              | *.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                      |
+| Dot File for Graphviz | *.dot           | PNG and Resized PNG               | One slide per DOT file showing the rendered graph                          |
+| GIF File              | *.gif           | Not Converted                     | One slide per GIF file showing the GIF                                     |
+| JPG File              | *.jpg or *.jpeg | PNG and Resized PNG               | One slide per JPG or JPEG file showing the resized PNG                     |
+| MMD File for Mermaid  | *.mmd           | PNG and Resized PNG               | One slide per MMD file showing the rendered graph                          |
+| PDF File              | *.pdf           | PNG and Resized PNG               | One slide per PDF file showing the resized PNG                             |
+| PNG File              | *.png           | Resized PNG                       | One slide per PNG file showing the resized PNG                             |
+| SVG File              | *.svg           | PNG and Resized PNG               | One slide per SVG file showing the resized PNG                             |
+| TIFF File             | *.tiff          | PNG and Resized PNG               | One slide per TIFF file showing the resized PNG                            |
+| TSV File              | *.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                      |
+| URLs (one per line)   | sites.txt       | PNG and Resized PNG for Each Site | One slide per web site URL showing the resized PNG screenshot for the site |
 
 ### Output directory structure
 
@@ -55,6 +57,7 @@ outdir
 
 * [csv2md](https://github.com/pstaender/csv2md)
 * [Graphviz](https://graphviz.org)
+* [mermaid-cli](https://github.com/mermaid-js/mermaid-cli)
 * [ImageMagick](https://imagemagick.org)
 * [pageres-cli](https://github.com/sindresorhus/pageres-cli)
 * [pandoc](https://pandoc.org)
@@ -69,6 +72,7 @@ brew install imagemagick
 brew install node
 brew install pandoc
 brew install poppler
+npm install -g mermaid.cli
 npm install -g csv2md
 npm install -g pageres-cli
 npm install -g svgexport

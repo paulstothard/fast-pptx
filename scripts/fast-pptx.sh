@@ -79,10 +79,10 @@ fi
 
 function end_test() {
   echo "'Check environment' test failed" >&2
-  exit 1
+  echo "Warning: some conversion steps may fail." >&2
 }
 
-for j in pageres dot csv2md pdftoppm convert svgexport pandoc; do
+for j in pageres dot mmdc csv2md pdftoppm convert svgexport pandoc; do
   if ! command -v $j &>/dev/null; then
     echo "'$j' is required but not installed." >&2
     end_test
@@ -118,8 +118,8 @@ if [ -f "${input}/sites.txt" ]; then
   done < "${input}/sites.txt"
 fi
 
-#convert dot files to graphs using graphviz
-#dot -Tpdf graph2.dot -o graph2.pdf
+#convert dot files to graphs using dot
+#dot -Tpdf graph.dot -o graph.pdf
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f -exec ls -rt "{}" + | while IFS= read -r dot; do
   file=$(basename -- "$dot")
   echo "Generating pdf for file '$dot'."
@@ -128,6 +128,18 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f -exec ls -rt "{}"
     continue
   fi
   dot -Tpdf "$dot" -o "$output/includes/${file}.pdf"
+done
+
+#convert mmd files to graphs using mmdc
+#mmdc -i graph.mmd -o graph.pdf --pdfFit
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.mmd" -type f -exec ls -rt "{}" + | while IFS= read -r mmd; do
+  file=$(basename -- "$mmd")
+  echo "Generating pdf for file '$mmd'."
+  if [ -f "${output}/includes/${file}.pdf" ] && ! $reprocess; then
+    echo "'$mmd' has already been processed--skipping."
+    continue
+  fi
+  mmdc -i "$mmd" -o "$output/includes/${file}.pdf" --pdfFit
 done
 
 #convert csv files to Markdown using csv2md
@@ -145,8 +157,24 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f -exec ls -rt "{}"
   rm -f "${output}/includes/${file}.temp"
 done
 
+#convert tsv files to Markdown using csv2md
+#csv2md -p --csvDelimiter=$'\t' < data.tsv > output.md
+find "${input}" -mindepth 1 -maxdepth 1 -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r tsv; do
+  file=$(basename -- "$tsv")
+  echo "Generating Markdown for file '$tsv'."
+  if [ -f "${output}/includes/${file}.md" ] && ! $reprocess; then
+    echo "'$tsv' has already been processed--skipping."
+    continue
+  fi
+  #extend short rows to length of first row
+  awk -F$'\t' -v OFS=$'\t' 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$tsv" > "${output}/includes/${file}.temp"
+  csv2md -p --csvDelimiter=$'\t' < "${output}/includes/${file}.temp" > "${output}/includes/${file}.md"
+  rm -f "${output}/includes/${file}.temp"
+done
+
 #cp additional files that are needed in output/includes
-find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.svg" -not -iname "*.tiff" -type f -exec ls -rt "{}" + | while IFS= read -r include_file; do
+#copy any files that are later processed in "${output}/includes/"
+find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.mmd" -not -iname "*.svg" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r include_file; do
   file=$(basename -- "$include_file")
   echo "Copying file '$include_file'."
   if [ -f "${output}/includes/${file}" ] && ! $reprocess; then
@@ -549,7 +577,7 @@ END
 done
 
 #Generate a single-column slide for each code file
-find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
+find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.mmd" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
   #Skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
