@@ -9,7 +9,7 @@ current_dir=$(pwd)
 
 # Function to change back to the original directory
 function return_to_original_dir() {
-    cd "$original_dir"
+    cd "$current_dir"
     echo "Returned to the original directory due to an error."
 }
 
@@ -27,8 +27,9 @@ USAGE:
    fast-pptx.sh -i DIR -o DIR [Options]
 
 DESCRIPTION:
-   Quickly make a PowerPoint presentation from a directory of URLs, images,
-   PDFs, CSV files, and code snippets.
+   Quickly make a PowerPoint presentation from a directory of code snippets, 
+   CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, 
+   and URLs.
 
 REQUIRED ARGUMENTS:
    -i, --input DIR
@@ -46,7 +47,7 @@ OPTIONAL ARGUMENTS:
       Show this message.
 
 EXAMPLE:
-   fast-pptx.sh -i input_dir -o output_dir  
+   fast-pptx.sh -i input_dir -o output_dir
 "
 }
 
@@ -715,12 +716,12 @@ if [ -f "./includes/theme.pptx" ]; then
     pandoc_command="pandoc $markdown_file -o $pptx --reference-doc ./includes/theme.pptx"
 
     # run the command
-    eval $pandoc_command
+    eval "$pandoc_command"
 
     # write the command to the current folder as a script that can be run later
     # include the shebang line and make the file executable
     echo "#!/bin/bash" > pandoc.sh
-    echo $pandoc_command >> pandoc.sh
+    echo "$pandoc_command" >> pandoc.sh
     chmod +x pandoc.sh
 
   fi
@@ -742,16 +743,16 @@ if [ -f "./includes/theme_code_blocks.pptx" ]; then
     pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o $pptx_code_blocks --reference-doc ./includes/theme_code_blocks.pptx"
 
     # run the command
-    eval $pandoc_command
+    eval "$pandoc_command"
 
     # write the command to the current folder as a script that can be run later
     # include the shebang line and make the file executable
     # check if pandoc.sh exists and if so append to it
     if [ -f "pandoc.sh" ]; then
-      echo $pandoc_command >> pandoc.sh
+      echo "$pandoc_command" >> pandoc.sh
     else
       echo "#!/bin/bash" > pandoc.sh
-      echo $pandoc_command >> pandoc.sh
+      echo "$pandoc_command" >> pandoc.sh
       chmod +x pandoc.sh
     fi
   fi

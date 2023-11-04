@@ -4,11 +4,11 @@ Quickly make a PowerPoint presentation from a directory of code snippets, CSV fi
 
 See the [sample output](includes/README_sample_output.md) produced from the included sample input files.
 
-### Author
+## Author
 
 Paul Stothard
 
-### Quick start
+## Quick start
 
 [Install dependencies and download **fast-pptx**](#install), place your source files into a single directory and then run **fast-pptx**:
 
@@ -24,26 +24,26 @@ You can also edit or replace the `theme.pptx` and `theme_code_blocks.pptx` files
 
 To combine the content from the `slides.pptx` and `slides_code_blocks.pptx` into a single presentation, open both presentations and then copy and paste slides from one presentation to the other. Click on the **Paste Options** button that appears after pasting and choose **Keep Source Formatting**.
 
-### Supported source file types for the input directory
+## Supported source file types for the input directory
 
 | Type                  | Filename        | Converted to                      | PowerPoint Content Generated                                                                            |
 |-----------------------|-----------------|-----------------------------------|---------------------------------------------------------------------------------------------------------|
-| Code Snippet          | *.<language>    | Not Converted                     | Two slides (one-column and two-column) per code snippet file showing syntax-highlighted code            |
-| CSV File              | *.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                                                   |
-| Dot File for Graphviz | *.dot           | PNG and Resized PNG               | Two slides (one-column and two-column) per DOT file showing the rendered graph                          |
-| GIF File              | *.gif           | Not Converted                     | Two slides (one-column and two-column) per GIF file showing the GIF                                     |
-| JPG File              | *.jpg or *.jpeg | PNG and Resized PNG               | Two slides (one-column and two-column) per JPG or JPEG file showing the resized PNG                     |
-| MMD File for Mermaid  | *.mmd           | PNG and Resized PNG               | Two slides (one-column and two-column) per MMD file showing the rendered graph                          |
-| PDF File              | *.pdf           | PNG and Resized PNG               | Two slides (one-column and two-column) per PDF file showing the resized PNG                             |
-| PNG File              | *.png           | Resized PNG                       | Two slides (one-column and two-column) per PNG file showing the resized PNG                             |
-| SVG File              | *.svg           | PNG and Resized PNG               | Two slides (one-column and two-column) per SVG file showing the resized PNG                             |
-| TIFF File             | *.tiff          | PNG and Resized PNG               | Two slides (one-column and two-column) per TIFF file showing the resized PNG                            |
-| TSV File              | *.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                                                   |
+| Code Snippet          | \*.\<language\>    | Not Converted                     | Two slides (one-column and two-column) per code snippet file showing syntax-highlighted code            |
+| CSV File              | \*.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                                                   |
+| Dot File for Graphviz | \*.dot           | PNG and Resized PNG               | Two slides (one-column and two-column) per DOT file showing the rendered graph                          |
+| GIF File              | \*.gif           | Not Converted                     | Two slides (one-column and two-column) per GIF file showing the GIF                                     |
+| JPG File              | \*.jpg or \*.jpeg | PNG and Resized PNG               | Two slides (one-column and two-column) per JPG or JPEG file showing the resized PNG                     |
+| MMD File for Mermaid  | \*.mmd           | PNG and Resized PNG               | Two slides (one-column and two-column) per MMD file showing the rendered graph                          |
+| PDF File              | \*.pdf           | PNG and Resized PNG               | Two slides (one-column and two-column) per PDF file showing the resized PNG                             |
+| PNG File              | \*.png           | Resized PNG                       | Two slides (one-column and two-column) per PNG file showing the resized PNG                             |
+| SVG File              | \*.svg           | PNG and Resized PNG               | Two slides (one-column and two-column) per SVG file showing the resized PNG                             |
+| TIFF File             | \*.tiff          | PNG and Resized PNG               | Two slides (one-column and two-column) per TIFF file showing the resized PNG                            |
+| TSV File              | \*.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                                                   |
 | URLs (one per line)   | sites.txt       | PNG and Resized PNG for Each Site | Two slides (one-column and two-column) per web site URL showing the resized PNG screenshot for the site |
 
-### Output directory structure
+## Output directory structure
 
-```
+```text
 outdir
 ├── slides.pptx
 ├── slides.md
@@ -56,7 +56,7 @@ outdir
     └── resized
 ```
 
-### Install
+## Install
 
 **fast-pptx** requires the following:
 
@@ -101,15 +101,16 @@ cd fast-pptx-1.0.1/scripts
 
 Add `fast-pptx.sh` to `PATH` or continue to specify the path to `fast-pptx.sh` to run.
 
-### Command-line options
+## Command-line options
 
-```
+```text
 USAGE:
    fast-pptx.sh -i DIR -o DIR [Options]
 
 DESCRIPTION:
-   Quickly make a PowerPoint presentation from a directory of URLs, images,
-   PDFs, CSV files, and code snippets.
+   Quickly make a PowerPoint presentation from a directory of code snippets, 
+   CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, 
+   and URLs.
 
 REQUIRED ARGUMENTS:
    -i, --input DIR
@@ -127,5 +128,5 @@ OPTIONAL ARGUMENTS:
       Show this message.
 
 EXAMPLE:
-   fast-pptx.sh -i input_dir -o output_dir 
+   fast-pptx.sh -i input_dir -o output_dir
 ```
