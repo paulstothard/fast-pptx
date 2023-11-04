@@ -20,24 +20,26 @@ The source files are used to build content, which is added to a PowerPoint prese
 
 The slides can then be edited in PowerPoint to change the order of slides, add or modify text, adjust font sizes, and choose designs for specific slides (using PowerPoint Designer by choosing **Design > Design Ideas** on the ribbon). The file size can then be reduced using **File > Compress Pictures...**.
 
-To combine the content from the two presentations into a single presentation, open both presentations and then copy and paste slides from one presentation to the other. Click on the **Paste Options** button that appears after pasting and choose **Keep Source Formatting**.
+You can also edit or replace the `theme.pptx` and `theme_code_blocks.pptx` files that are written to the output folder's `includes` directory and then re-generate the slides using the `pandoc.sh` script that is included in the output folder. These reference `.pptx` files serve as templates. Pandoc will use these files as a basis for creating the new presentations. This means that instead of the default PowerPoint styles, your presentation will inherit the styles defined in the reference documents — including fonts, colors, bullet styles, and other formatting. A separate reference document is used for the code blocks to allow for smaller fonts and different colors to be specified.
+
+To combine the content from the `slides.pptx` and `slides_code_blocks.pptx` into a single presentation, open both presentations and then copy and paste slides from one presentation to the other. Click on the **Paste Options** button that appears after pasting and choose **Keep Source Formatting**.
 
 ### Supported source file types for the input directory
 
-| Type                  | Filename        | Converted to                      | PowerPoint Content Generated                                               |
-|-----------------------|-----------------|-----------------------------------|----------------------------------------------------------------------------|
-| Code Snippet          | *.<language>    | Not Converted                     | One slide per code snippet file showing syntax-highlighted code            |
-| CSV File              | *.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                      |
-| Dot File for Graphviz | *.dot           | PNG and Resized PNG               | One slide per DOT file showing the rendered graph                          |
-| GIF File              | *.gif           | Not Converted                     | One slide per GIF file showing the GIF                                     |
-| JPG File              | *.jpg or *.jpeg | PNG and Resized PNG               | One slide per JPG or JPEG file showing the resized PNG                     |
-| MMD File for Mermaid  | *.mmd           | PNG and Resized PNG               | One slide per MMD file showing the rendered graph                          |
-| PDF File              | *.pdf           | PNG and Resized PNG               | One slide per PDF file showing the resized PNG                             |
-| PNG File              | *.png           | Resized PNG                       | One slide per PNG file showing the resized PNG                             |
-| SVG File              | *.svg           | PNG and Resized PNG               | One slide per SVG file showing the resized PNG                             |
-| TIFF File             | *.tiff          | PNG and Resized PNG               | One slide per TIFF file showing the resized PNG                            |
-| TSV File              | *.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                      |
-| URLs (one per line)   | sites.txt       | PNG and Resized PNG for Each Site | One slide per web site URL showing the resized PNG screenshot for the site |
+| Type                  | Filename        | Converted to                      | PowerPoint Content Generated                                                                            |
+|-----------------------|-----------------|-----------------------------------|---------------------------------------------------------------------------------------------------------|
+| Code Snippet          | *.<language>    | Not Converted                     | Two slides (one-column and two-column) per code snippet file showing syntax-highlighted code            |
+| CSV File              | *.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                                                   |
+| Dot File for Graphviz | *.dot           | PNG and Resized PNG               | Two slides (one-column and two-column) per DOT file showing the rendered graph                          |
+| GIF File              | *.gif           | Not Converted                     | Two slides (one-column and two-column) per GIF file showing the GIF                                     |
+| JPG File              | *.jpg or *.jpeg | PNG and Resized PNG               | Two slides (one-column and two-column) per JPG or JPEG file showing the resized PNG                     |
+| MMD File for Mermaid  | *.mmd           | PNG and Resized PNG               | Two slides (one-column and two-column) per MMD file showing the rendered graph                          |
+| PDF File              | *.pdf           | PNG and Resized PNG               | Two slides (one-column and two-column) per PDF file showing the resized PNG                             |
+| PNG File              | *.png           | Resized PNG                       | Two slides (one-column and two-column) per PNG file showing the resized PNG                             |
+| SVG File              | *.svg           | PNG and Resized PNG               | Two slides (one-column and two-column) per SVG file showing the resized PNG                             |
+| TIFF File             | *.tiff          | PNG and Resized PNG               | Two slides (one-column and two-column) per TIFF file showing the resized PNG                            |
+| TSV File              | *.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                                                   |
+| URLs (one per line)   | sites.txt       | PNG and Resized PNG for Each Site | Two slides (one-column and two-column) per web site URL showing the resized PNG screenshot for the site |
 
 ### Output directory structure
 
@@ -47,8 +49,11 @@ outdir
 ├── slides.md
 ├── slides_code_blocks.pptx
 ├── slides_code_blocks.md
+├── pandoc.sh
 └── includes
-    ├── resized
+    ├── theme.pptx
+    ├── theme_code_blocks.pptx
+    └── resized
 ```
 
 ### Install
@@ -116,8 +121,8 @@ OPTIONAL ARGUMENTS:
       Overwrite existing slides.md and pptx files in output directory.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
-   -t, --two-column
-      For slides containing images generate additional two-column slides.
+   -s, --single-column
+      Only generate single-column slides.
    -h, --help
       Show this message.
 

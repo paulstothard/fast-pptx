@@ -2,7 +2,19 @@
 
 force=false
 reprocess=false
-two_column=false
+two_column=true
+
+# store current directory
+current_dir=$(pwd)
+
+# Function to change back to the original directory
+function return_to_original_dir() {
+    cd "$original_dir"
+    echo "Returned to the original directory due to an error."
+}
+
+# Set a trap to execute the function on errors
+trap return_to_original_dir ERR
 
 function error_exit() {
     echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
@@ -28,8 +40,8 @@ OPTIONAL ARGUMENTS:
       Overwrite existing slides.md and pptx files in output directory.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
-   -t, --two-column
-      For slides containing images generate additional two-column slides.
+   -s, --single-column
+      Only generate single-column slides.
    -h, --help
       Show this message.
 
@@ -54,8 +66,8 @@ while [ "$1" != "" ]; do
     -r | --reprocess)
         reprocess=true
         ;;
-    -t | --two-column)
-        two_column=true
+    -s | --single-column)
+        two_column=false
         ;;
     -h | --help)
         usage
@@ -315,6 +327,8 @@ END
 echo "$SINGLE_COLUMN_TEXT" >> "$markdown"
 echo -e "" >> "$markdown"
 
+if $two_column; then 
+
 TWO_COLUMNS_WITH_TEXT=$(cat <<-END
 ## Slide title
 
@@ -345,6 +359,7 @@ END
 echo "$TWO_COLUMNS_WITH_TEXT" >> "$markdown"
 echo -e "" >> "$markdown"
 
+fi
 
 SINGLE_BULLETED_LIST=$(cat <<-END
 ## Slide title
@@ -405,6 +420,8 @@ END
 echo "$SINGLE_ORDERED_LIST_WITH_INDENTING" >> "$markdown"
 echo -e "" >> "$markdown"
 
+if $two_column; then
+
 TWO_COLUMNS_WITH_LISTS=$(cat <<-END
 ## Slide title
 
@@ -443,6 +460,8 @@ END
 
 echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
 echo -e "" >> "$markdown"
+
+fi
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
@@ -596,7 +615,7 @@ END
 
 done
 
-#Generate a single-column slide for each code file
+#Generate a single-column slide for each code file and if $two_column generate two-column slide for each code file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.mmd" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
   
   # get the filename without the path
@@ -633,12 +652,47 @@ END
   echo "$CODE" >> "$markdown_code_blocks"
   echo -e "" >> "$markdown_code_blocks"
 
-done
+if $two_column; then
+  CODE=$(cat <<-END
+## Slide title
+
+:::::::::::::: {.columns}
+
+::: {.column width="50%"}
+
+- Bullet
+- Bullet
+- Bullet
+
+:::
+
+::: {.column width="50%"}
+
+\`\`\`$extension
+$text
+\`\`\`
+
+:::
+
+::::::::::::::
+
+::: notes
+
+$code_in_output
+
+:::
+
+END
+)
+
+  echo "$CODE" >> "$markdown_code_blocks"
+  echo -e "" >> "$markdown_code_blocks"
 
 fi
 
-# store current directory
-current_dir=$(pwd)
+done
+
+fi
 
 # change to output directory
 cd "$output"
@@ -656,7 +710,19 @@ if [ -f "./includes/theme.pptx" ]; then
     echo "Use '--force' to overwrite."
   else
     echo "Generating pptx file '$pptx'."
-    pandoc "$markdown_file" -o "$pptx" --reference-doc "./includes/theme.pptx"
+    
+    # create a string containing the pandoc command
+    pandoc_command="pandoc $markdown_file -o $pptx --reference-doc ./includes/theme.pptx"
+
+    # run the command
+    eval $pandoc_command
+
+    # write the command to the current folder as a script that can be run later
+    # include the shebang line and make the file executable
+    echo "#!/bin/bash" > pandoc.sh
+    echo $pandoc_command >> pandoc.sh
+    chmod +x pandoc.sh
+
   fi
 fi
 
@@ -671,7 +737,23 @@ if [ -f "./includes/theme_code_blocks.pptx" ]; then
     echo "Use '--force' to overwrite."
   else
     echo "Generating pptx file '$pptx_code_blocks'."
-    pandoc "$markdown_code_blocks_file" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+
+    # create a string containing the pandoc command
+    pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o $pptx_code_blocks --reference-doc ./includes/theme_code_blocks.pptx"
+
+    # run the command
+    eval $pandoc_command
+
+    # write the command to the current folder as a script that can be run later
+    # include the shebang line and make the file executable
+    # check if pandoc.sh exists and if so append to it
+    if [ -f "pandoc.sh" ]; then
+      echo $pandoc_command >> pandoc.sh
+    else
+      echo "#!/bin/bash" > pandoc.sh
+      echo $pandoc_command >> pandoc.sh
+      chmod +x pandoc.sh
+    fi
   fi
 fi
 
