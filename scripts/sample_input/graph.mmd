@@ -1,0 +1,13 @@
+graph TD
+    A[Start] --> B[Task 1]
+    B --> C{Decision 1}
+    C -->|Option 1| D[Task 2]
+    D --> E[Task 3]
+    C -->|Option 2| F[Task 4]
+    F --> G[Task 5]
+
+    classDef default fill:#f9f,stroke:#333,stroke-width:4px;
+    classDef decision fill:#fdd,stroke:#f66,stroke-width:2px,stroke-dasharray: 5, 5;
+    class C decision
+
+
