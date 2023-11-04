@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Define source and backup directories
 SOURCE="/path/to/source"
 BACKUP="/path/to/backup"

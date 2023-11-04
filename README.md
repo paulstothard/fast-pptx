@@ -1,6 +1,8 @@
 # fast-pptx
 
-Quickly make a PowerPoint presentation from a directory of URLs, images, PDFs, CSV files, and code snippets.
+Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, Graphviz DOT files, images, PDFs, and URLs. **fast-pptx** adds syntax highlighting to the code snippets, converts the CSV files to tables, renders the DOT files, creates high-resolution images from the PDFs, captures screenshots of the websites, and then adds the content to a PowerPoint presentation.
+
+See the [sample output](includes/sample_output.md) produced from the included sample input files.
 
 ### Author
 
