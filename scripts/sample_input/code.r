@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-
 # Simulate some data
 set.seed(42)
 x <- 1:100

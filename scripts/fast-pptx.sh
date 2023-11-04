@@ -269,9 +269,6 @@ END
 echo "$SECTION" >> "$markdown"
 echo -e "" >> "$markdown"
 
-echo "$SECTION" >> "$markdown_code_blocks"
-echo -e "" >> "$markdown_code_blocks"
-
 SINGLE_COLUMN_TEXT=$(cat <<-END
 ## Slide title
 
@@ -583,31 +580,6 @@ END
   echo -e "" >> "$markdown_code_blocks"
 
 done
-
-SECTION=$(cat <<-END
-# Section Title
-END
-)
-
-echo "$SECTION" >> "$markdown"
-echo -e "" >> "$markdown"
-
-SINGLE_BULLETED_LIST=$(cat <<-END
-## Slide title
-
-- list item
-- list item
-- list item
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$SINGLE_BULLETED_LIST" >> "$markdown"
 
 fi
 
