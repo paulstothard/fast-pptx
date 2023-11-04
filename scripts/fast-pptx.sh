@@ -218,7 +218,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f -exec ls
   convert "$png" -resize 4000 "${output}/includes/resized/${file}"
 done
 
-#copy .potx and .pptx template files
+#copy potx and pptx template files
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
