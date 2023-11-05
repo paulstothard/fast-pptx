@@ -4,18 +4,6 @@ force=false
 reprocess=false
 two_column=true
 
-# store current directory
-current_dir=$(pwd)
-
-# Function to change back to the original directory
-function return_to_original_dir() {
-    cd "$current_dir"
-    echo "Returned to the original directory due to an error."
-}
-
-# Set a trap to execute the function on errors
-trap return_to_original_dir ERR
-
 function error_exit() {
     echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
     exit 1
@@ -110,8 +98,8 @@ if [ ! -d "${output}/includes" ]; then
   mkdir -p "${output}/includes"
 fi
 
-#process urls in file input/sites.txt
-#save each html file as png using pageres
+# process urls in file input/sites.txt
+# save each html file as png using pageres
 if [ -f "${input}/sites.txt" ]; then
   while IFS='' read -r url || [ -n "$url" ]; do
     if [ -z "$url" ]; then
@@ -124,15 +112,15 @@ if [ -f "${input}/sites.txt" ]; then
       echo "'$url' has already been processed--skipping."
       continue
     fi
-    #these settings give a final image of width 4485 pixels
-    #first remove output file if it exists
+    # these settings give a final image of width 4485 pixels
+    # first remove output file if it exists
     rm -f "${output}/includes/${output_name}.png"
     pageres "$url" 897x1090 --crop --scale=5 --filename="${output}/includes/${output_name}"
   done < "${input}/sites.txt"
 fi
 
-#convert dot files to graphs using dot
-#dot -Tpdf graph.dot -o graph.pdf
+# convert dot files to graphs using dot
+# dot -Tpdf graph.dot -o graph.pdf
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f -exec ls -rt "{}" + | while IFS= read -r dot; do
   file=$(basename -- "$dot")
   echo "Generating pdf for file '$dot'."
@@ -143,8 +131,8 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.dot" -type f -exec ls -rt "{}"
   dot -Tpdf "$dot" -o "$output/includes/${file}.pdf"
 done
 
-#convert mmd files to graphs using mmdc
-#mmdc -i graph.mmd -o graph.pdf --pdfFit
+# convert mmd files to graphs using mmdc
+# mmdc -i graph.mmd -o graph.pdf --pdfFit
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.mmd" -type f -exec ls -rt "{}" + | while IFS= read -r mmd; do
   file=$(basename -- "$mmd")
   echo "Generating pdf for file '$mmd'."
@@ -155,8 +143,8 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.mmd" -type f -exec ls -rt "{}"
   mmdc -i "$mmd" -o "$output/includes/${file}.pdf" --pdfFit
 done
 
-#convert csv files to Markdown using csv2md
-#csv2md -p data.csv > output.md
+# convert csv files to Markdown using csv2md
+# csv2md -p data.csv > output.md
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f -exec ls -rt "{}" + | while IFS= read -r csv; do
   file=$(basename -- "$csv")
   echo "Generating Markdown for file '$csv'."
@@ -164,14 +152,14 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.csv" -type f -exec ls -rt "{}"
     echo "'$csv' has already been processed--skipping."
     continue
   fi
-  #extend short rows to length of first row
+  # extend short rows to length of first row
   awk -F, -v OFS="," 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$csv" > "${output}/includes/${file}.temp"
   csv2md -p < "${output}/includes/${file}.temp" > "${output}/includes/${file}.md"
   rm -f "${output}/includes/${file}.temp"
 done
 
-#convert tsv files to Markdown using csv2md
-#csv2md -p --csvDelimiter=$'\t' < data.tsv > output.md
+# convert tsv files to Markdown using csv2md
+# csv2md -p --csvDelimiter=$'\t' < data.tsv > output.md
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r tsv; do
   file=$(basename -- "$tsv")
   echo "Generating Markdown for file '$tsv'."
@@ -179,14 +167,14 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.tsv" -type f -exec ls -rt "{}"
     echo "'$tsv' has already been processed--skipping."
     continue
   fi
-  #extend short rows to length of first row
+  # extend short rows to length of first row
   awk -F$'\t' -v OFS=$'\t' 'NR==1 {cols=NF} {$1=$1; for (i=NF+1; i <= cols; i++) $i = "."} 1' "$tsv" > "${output}/includes/${file}.temp"
   csv2md -p --csvDelimiter=$'\t' < "${output}/includes/${file}.temp" > "${output}/includes/${file}.md"
   rm -f "${output}/includes/${file}.temp"
 done
 
-#cp additional files that are needed in output/includes
-#copy any files that are later processed in "${output}/includes/"
+# cp additional files that are needed in output/includes
+# copy any files that are later processed in "${output}/includes/"
 find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.mmd" -not -iname "*.svg" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r include_file; do
   file=$(basename -- "$include_file")
   echo "Copying file '$include_file'."
@@ -197,7 +185,7 @@ find "${input}" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.c
   cp "$include_file" "${output}/includes/${file}"
 done
 
-#convert pdf files to png
+# convert pdf files to png
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f -exec ls -rt "{}" + | while IFS= read -r pdf; do
   echo "Generating png for '$pdf'."
   if [ -f "${pdf}-1.png" ] || [ -f "${pdf}-01.png" ] || [ -f "${pdf}-001.png" ] && ! $reprocess; then
@@ -207,7 +195,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.pdf" -type f -exec l
   pdftoppm -f 1 -l 1 -png "$pdf" "${pdf}" -r 600
 done
 
-#convert jpg and jpeg images to png
+# convert jpg and jpeg images to png
 find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.jpg -o -iname \*.jpeg \) -type f -exec ls -rt "{}" + | while IFS= read -r jpg; do
   file=$(basename -- "$jpg")
   echo "Generating png for '$jpg'."
@@ -218,7 +206,7 @@ find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.jpg -o -iname \*.jpeg \) -t
   convert "$jpg" "${output}/includes/${file}.png"
 done
 
-#convert tiff images to png
+# convert tiff images to png
 find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.tiff \) -type f -exec ls -rt "{}" + | while IFS= read -r tiff; do
   file=$(basename -- "$tiff")
   echo "Generating png for '$tiff'."
@@ -229,7 +217,7 @@ find "${input}" -mindepth 1 -maxdepth 1 \( -iname \*.tiff \) -type f -exec ls -r
   convert "$tiff" "${output}/includes/${file}.png"
 done
 
-#convert svg images to png
+# convert svg images to png
 find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f -exec ls -rt "{}" + | while IFS= read -r svg; do
   file=$(basename -- "$svg")
   echo "Generating png for '$svg'."
@@ -237,14 +225,14 @@ find "${input}" -mindepth 1 -maxdepth 1 -iname "*.svg" -type f -exec ls -rt "{}"
     echo "'$svg' has already been processed--skipping."
     continue
   fi
-  #convert "$svg" "${output}/includes/${file}.png"
+  # convert "$svg" "${output}/includes/${file}.png"
   SVGEXPORT_TIMEOUT=60 svgexport "$svg" "${output}/includes/${file}.png" 4000:
 done
 
-#resize images
-#PowerPoint slide is 13.33 inches wide at 16:9 setting
-#If images are 150 DPI then that is 2000 pixels in width
-#If images are 300 DPI then that is 4000 pixels in width
+# resize images
+# PowerPoint slide is 13.33 inches wide at 16:9 setting
+# If images are 150 DPI then that is 2000 pixels in width
+# If images are 300 DPI then that is 4000 pixels in width
 if [ ! -d "${output}/includes/resized" ]; then
   mkdir -p "${output}/includes/resized"
 fi
@@ -259,7 +247,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -name "*.png" -type f -exec ls
   convert "$png" -resize 4000 "${output}/includes/resized/${file}"
 done
 
-#copy potx and pptx template files
+# copy potx and pptx template files
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
@@ -290,7 +278,7 @@ else
 
 echo "Generating Markdown file '$markdown'."
 
-#generate Markdown output
+# generate Markdown output
 TITLE=$(cat <<-END
 % Presentation title
 % Name
@@ -330,7 +318,7 @@ END
 echo "$SINGLE_BULLETED_LIST" >> "$markdown"
 echo -e "" >> "$markdown"
 
-#Generate single-column slide for each image and if $two_column generate two-column slide for each image
+# generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
 
   # get the filename without the path
@@ -392,7 +380,7 @@ fi
 
 done
 
-#Generate single-column slide for each image and if $two_column generate two-column slide for each image
+# generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.gif" -type f -exec ls -rt "{}" + | while IFS= read -r gif; do
 
   # get the filename without the path
@@ -454,7 +442,7 @@ fi
 
 done
 
-#Generate a slide for each Markdown file and if $two_column generate two-column slide for each Markdown file
+# generate a slide for each Markdown file and if $two_column generate two-column slide for each Markdown file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f -exec ls -rt "{}" + | while IFS= read -r md; do
 
   # get the filename without the path
@@ -517,7 +505,7 @@ fi
 
 done
 
-#Generate a single-column slide for each code file and if $two_column generate two-column slide for each code file
+# generate a single-column slide for each code file and if $two_column generate two-column slide for each code file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -iname "*.csv" -not -iname "*.dot" -not -iname ".DS_Store" -not -iname "*.gif" -not -iname "*.jpeg" -not -iname "*.jpg" -not -iname "*.md" -not -iname "*.mmd" -not -iname "*.pdf" -not -iname "*.png" -not -iname "*.pptx" -not -iname "*.potx" -not -iname "*.svg" -not -iname "*.temp" -not -iname "*.tiff" -not -iname "*.tsv" -type f -exec ls -rt "{}" + | while IFS= read -r code; do
   
   # get the filename without the path
@@ -525,7 +513,7 @@ find "${output}/includes" -mindepth 1 -maxdepth 1 -not -iname "sites.txt" -not -
   # create the path to the file from in the output folder
   code_in_output="./includes/${file}"
   
-  #Skip files larger than 1 KB
+  # skip files larger than 1 KB
   maxsize=1000
   filesize=$(du -k "$code" | cut -f1)
   if (( filesize > maxsize )); then
@@ -596,70 +584,58 @@ done
 
 fi
 
-# change to output directory
-cd "$output"
 
 # generate pptx file using standard template
-pptx=slides.pptx
+pptx=${output}/slides.pptx
 
 echo "Generating pptx file '$pptx'."
 
-# generate pptx if "./includes" contains "theme.pptx"
-if [ -f "./includes/theme.pptx" ]; then
-  # check if the output file exists and if $force is not true
-  if [ -f "${pptx}" ] && ! $force; then
-    echo "'${pptx}' has already been created."
-    echo "Use '--force' to overwrite."
-  else
-    echo "Generating pptx file '$pptx'."
-    
-    # create a string containing the pandoc command
-    pandoc_command="pandoc $markdown_file -o $pptx --reference-doc ./includes/theme.pptx"
 
-    # run the command
-    eval "$pandoc_command"
+# check if the output file exists and if $force is not true
+if [ -f "${pptx}" ] && ! $force; then
+  echo "'${pptx}' has already been created."
+  echo "Use '--force' to overwrite."
+else
+  echo "Generating pptx file '$pptx'."
+  
+  # convert the Markdown file to pptx
+  pandoc "$markdown" --resource-path="${output}" -o "$pptx" --reference-doc "./includes/theme.pptx"
 
-    # write the command to the current folder as a script that can be run later
-    # include the shebang line and make the file executable
-    echo "#!/bin/bash" > pandoc.sh
-    echo "$pandoc_command" >> pandoc.sh
-    chmod +x pandoc.sh
+  # create a script that can be used to regenerate the pptx file
+  # include the shebang line and make the file executable
+  pandoc_command="pandoc $markdown_file -o slides.pptx --reference-doc ./includes/theme.pptx"
+  echo "#!/bin/bash" > "${output}/pandoc.sh"
+  echo "$pandoc_command" >> "${output}/pandoc.sh"
+  chmod +x "${output}/pandoc.sh"
 
-  fi
 fi
 
 # generate pptx file using code_blocks template
-pptx_code_blocks=slides_code_blocks.pptx
+pptx_code_blocks=${output}/slides_code_blocks.pptx
 
-# generate pptx if "./includes" contains "theme_code_blocks.pptx"
-if [ -f "./includes/theme_code_blocks.pptx" ]; then
-  # check if the output file exists and if $force is not true
-  if [ -f "${pptx_code_blocks}" ] && ! $force; then
-    echo "'${pptx_code_blocks}' has already been created."
-    echo "Use '--force' to overwrite."
+
+# check if the output file exists and if $force is not true
+if [ -f "${pptx_code_blocks}" ] && ! $force; then
+  echo "'${pptx_code_blocks}' has already been created."
+  echo "Use '--force' to overwrite."
+else
+  echo "Generating pptx file '$pptx_code_blocks'."
+
+  # convert the Markdown file to pptx
+  pandoc "$markdown_code_blocks" --resource-path="${output}" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+
+  # create a script that can be used to regenerate the pptx file
+  # include the shebang line and make the file executable
+  # check if pandoc.sh exists and if so append to it
+  pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o slides_code_blocks.pptx --reference-doc ./includes/theme_code_blocks.pptx"
+
+  if [ -f "${output}/pandoc.sh" ]; then
+    echo "$pandoc_command" >> "${output}/pandoc.sh"
   else
-    echo "Generating pptx file '$pptx_code_blocks'."
-
-    # create a string containing the pandoc command
-    pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o $pptx_code_blocks --reference-doc ./includes/theme_code_blocks.pptx"
-
-    # run the command
-    eval "$pandoc_command"
-
-    # write the command to the current folder as a script that can be run later
-    # include the shebang line and make the file executable
-    # check if pandoc.sh exists and if so append to it
-    if [ -f "pandoc.sh" ]; then
-      echo "$pandoc_command" >> pandoc.sh
-    else
-      echo "#!/bin/bash" > pandoc.sh
-      echo "$pandoc_command" >> pandoc.sh
-      chmod +x pandoc.sh
-    fi
+    echo "#!/bin/bash" > "${output}/pandoc.sh"
+    echo "$pandoc_command" >> "${output}/pandoc.sh"
+    chmod +x "${output}/pandoc.sh"
   fi
 fi
-
-# change back to original directory
-cd "$current_dir"
 
 echo "Done. Check '$output' for slides."
