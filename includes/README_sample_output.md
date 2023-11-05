@@ -56,12 +56,6 @@
 
 ![../includes/slide_27.png](../includes/slide_27.png)
 
-![../includes/slide_28.png](../includes/slide_28.png)
-
-![../includes/slide_29.png](../includes/slide_29.png)
-
-![../includes/slide_30.png](../includes/slide_30.png)
-
 ## Slides with Code Blocks
 
 ![../includes/slide_code_block_1.png](../includes/slide_code_block_1.png)

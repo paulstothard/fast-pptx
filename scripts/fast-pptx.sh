@@ -312,62 +312,12 @@ END
 echo "$SECTION" >> "$markdown"
 echo -e "" >> "$markdown"
 
-SINGLE_COLUMN_TEXT=$(cat <<-END
-## Slide title
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$SINGLE_COLUMN_TEXT" >> "$markdown"
-echo -e "" >> "$markdown"
-
-if $two_column; then 
-
-TWO_COLUMNS_WITH_TEXT=$(cat <<-END
-## Slide title
-
-:::::::::::::: {.columns}
-
-::: {.column width="50%"}
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-:::
-
-::: {.column width="50%"}
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-:::
-
-::::::::::::::
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$TWO_COLUMNS_WITH_TEXT" >> "$markdown"
-echo -e "" >> "$markdown"
-
-fi
-
 SINGLE_BULLETED_LIST=$(cat <<-END
 ## Slide title
 
-- list item
-- list item
-- list item
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+- Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 
 ::: notes
 
@@ -379,90 +329,6 @@ END
 
 echo "$SINGLE_BULLETED_LIST" >> "$markdown"
 echo -e "" >> "$markdown"
-
-SINGLE_BULLETED_LIST_WITH_INDENTING=$(cat <<-END
-## Slide title
-
-- list item
-  - list item
-  - list item
-    - list item
-- list item
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$SINGLE_BULLETED_LIST_WITH_INDENTING" >> "$markdown"
-echo -e "" >> "$markdown"
-
-SINGLE_ORDERED_LIST_WITH_INDENTING=$(cat <<-END
-## Slide title
-
-1. list item
-   1. list item
-   1. list item
-      1. list item
-   1. list item
-1. list item
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$SINGLE_ORDERED_LIST_WITH_INDENTING" >> "$markdown"
-echo -e "" >> "$markdown"
-
-if $two_column; then
-
-TWO_COLUMNS_WITH_LISTS=$(cat <<-END
-## Slide title
-
-:::::::::::::: {.columns}
-
-::: {.column width="50%"}
-
-- list item
-  - list item
-  - list item
-    - list item
-- list item
-
-:::
-
-::: {.column width="50%"}
-
-1. list item
-   1. list item
-   1. list item
-      1. list item
-   1. list item
-1. list item
-
-:::
-
-::::::::::::::
-
-::: notes
-
-Notes
-
-:::
-END
-)
-
-echo "$TWO_COLUMNS_WITH_LISTS" >> "$markdown"
-echo -e "" >> "$markdown"
-
-fi
 
 #Generate single-column slide for each image and if $two_column generate two-column slide for each image
 find "${output}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
@@ -497,9 +363,8 @@ if $two_column; then
 
 ::: {.column width="50%"}
 
-- Bullet
-- Bullet
-- Bullet
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 :::
 
@@ -559,9 +424,8 @@ if $two_column; then
 
 ::: {.column width="50%"}
 
-- Bullet
-- Bullet
-- Bullet
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 :::
 
@@ -588,7 +452,7 @@ fi
 
 done
 
-#Generate a slide for each Markdown file
+#Generate a slide for each Markdown file and if $two_column generate two-column slide for each Markdown file
 find "${output}/includes" -mindepth 1 -maxdepth 1 -iname "*.md" -type f -exec ls -rt "{}" + | while IFS= read -r md; do
 
   # get the filename without the path
@@ -613,6 +477,40 @@ END
 
   echo "$TABLE" >> "$markdown"
   echo -e "" >> "$markdown"
+
+if $two_column; then
+  TABLE=$(cat <<-END
+## Slide title
+
+:::::::::::::: {.columns}
+
+::: {.column width="50%"}
+
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+:::
+
+::: {.column width="50%"}
+
+$text
+
+:::
+
+::::::::::::::
+
+::: notes
+
+$md_in_output
+
+:::
+
+END
+)
+
+  echo "$TABLE" >> "$markdown"
+  echo -e "" >> "$markdown"
+fi
 
 done
 
@@ -661,9 +559,8 @@ if $two_column; then
 
 ::: {.column width="50%"}
 
-- Bullet
-- Bullet
-- Bullet
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+- Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 :::
 
