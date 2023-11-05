@@ -118,15 +118,16 @@ REQUIRED ARGUMENTS:
    -o, --output DIR
       Directory for output files.
 OPTIONAL ARGUMENTS:
+   -cr, --cron
+      Run silently unless error is encountered.
    -f, --force
       Overwrite existing slides.md and pptx files in output directory.
+   -h, --help
+      Display this message.
+   -nc, --no-colour
+      Disable colour output.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
-   -s, --single-column
-      Only generate single-column slides.
-   -h, --help
-      Show this message.
-
-EXAMPLE:
-   fast-pptx.sh -i input_dir -o output_dir
+   -v, --verbose
+      Display verbose output.
 ```
