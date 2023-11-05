@@ -1,2 +1,2 @@
 #!/bin/bash
-./fast-pptx.sh -f -r -i sample_input -o sample_output
+./fast-pptx.sh -f -i sample_input -o sample_output
