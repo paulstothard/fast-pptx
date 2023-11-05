@@ -1,11 +1,14 @@
-Program, Version, Purpose
-Prokka, 1.14.5, Genome annotation
-FastQC, 0.11.9, Illumina read QC
-Snippy, 4.6.0, Genome comparisons
-CGView, 2.0.2, Genome visualization
-SPAdes, 3.12.0, Genome assembly
-Quast, 5.0.2, Genome assembly QC
-NUCmer, 3.1, Genome alignment
-Circos, 0.69-8, Genome visualization
-Infoseq, 6.6.0.0, Sequence statistics
-R, 3.6.2, Summary statistics
+MemberID,FavoriteBook,YearJoined
+M001,The Great Gatsby,2018
+M002,To Kill a Mockingbird,2019
+M003,1984,2015
+M004,The Catcher in the Rye,2017
+M005,Pride and Prejudice,2020
+M006,The Hobbit,2016
+M007,The Little Prince,2018
+M008,The Alchemist,2019
+M009,Sapiens,2015
+M010,Brave New World,2017
+M011,The Book Thief,2020
+M012,Animal Farm,2016
+M013,Harry Potter and the Sorcerer's Stone,2018

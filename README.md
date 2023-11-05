@@ -26,20 +26,20 @@ To combine the content from the `slides.pptx` and `slides_code_blocks.pptx` into
 
 ## Supported source file types for the input directory
 
-| Type                  | Filename        | Converted to                      | PowerPoint Content Generated                                                                            |
-|-----------------------|-----------------|-----------------------------------|---------------------------------------------------------------------------------------------------------|
-| Code Snippet          | \*.\<language\>    | Not Converted                     | Two slides (one-column and two-column) per code snippet file showing syntax-highlighted code            |
-| CSV File              | \*.csv           | Markdown Table                    | One slide per CSV file showing the content as a table                                                   |
-| Dot File for Graphviz | \*.dot           | PNG and Resized PNG               | Two slides (one-column and two-column) per DOT file showing the rendered graph                          |
-| GIF File              | \*.gif           | Not Converted                     | Two slides (one-column and two-column) per GIF file showing the GIF                                     |
+| Type                  | Filename          | Converted to                      | PowerPoint Content Generated                                                                            |
+|-----------------------|-------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------|
+| Code Snippet          | \*.\<language\>   | Not Converted                     | Two slides (one-column and two-column) per code snippet file showing syntax-highlighted code            |
+| CSV File              | \*.csv            | Markdown Table                    | Two slides (one-column and two-column) per CSV file showing the content as a table                      |
+| Dot File for Graphviz | \*.dot            | PNG and Resized PNG               | Two slides (one-column and two-column) per DOT file showing the rendered graph                          |
+| GIF File              | \*.gif            | Not Converted                     | Two slides (one-column and two-column) per GIF file showing the GIF                                     |
 | JPG File              | \*.jpg or \*.jpeg | PNG and Resized PNG               | Two slides (one-column and two-column) per JPG or JPEG file showing the resized PNG                     |
-| MMD File for Mermaid  | \*.mmd           | PNG and Resized PNG               | Two slides (one-column and two-column) per MMD file showing the rendered graph                          |
-| PDF File              | \*.pdf           | PNG and Resized PNG               | Two slides (one-column and two-column) per PDF file showing the resized PNG                             |
-| PNG File              | \*.png           | Resized PNG                       | Two slides (one-column and two-column) per PNG file showing the resized PNG                             |
-| SVG File              | \*.svg           | PNG and Resized PNG               | Two slides (one-column and two-column) per SVG file showing the resized PNG                             |
-| TIFF File             | \*.tiff          | PNG and Resized PNG               | Two slides (one-column and two-column) per TIFF file showing the resized PNG                            |
-| TSV File              | \*.tsv           | Markdown Table                    | One slide per TSV file showing the content as a table                                                   |
-| URLs (one per line)   | sites.txt       | PNG and Resized PNG for Each Site | Two slides (one-column and two-column) per web site URL showing the resized PNG screenshot for the site |
+| MMD File for Mermaid  | \*.mmd            | PNG and Resized PNG               | Two slides (one-column and two-column) per MMD file showing the rendered graph                          |
+| PDF File              | \*.pdf            | PNG and Resized PNG               | Two slides (one-column and two-column) per PDF file showing the resized PNG                             |
+| PNG File              | \*.png            | Resized PNG                       | Two slides (one-column and two-column) per PNG file showing the resized PNG                             |
+| SVG File              | \*.svg            | PNG and Resized PNG               | Two slides (one-column and two-column) per SVG file showing the resized PNG                             |
+| TIFF File             | \*.tiff           | PNG and Resized PNG               | Two slides (one-column and two-column) per TIFF file showing the resized PNG                            |
+| TSV File              | \*.tsv            | Markdown Table                    | Two slides (one-column and two-column) per TSV file showing the content as a table                      |
+| URLs (one per line)   | sites.txt         | PNG and Resized PNG for Each Site | Two slides (one-column and two-column) per web site URL showing the resized PNG screenshot for the site |
 
 ## Output directory structure
 
