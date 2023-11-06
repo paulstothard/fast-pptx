@@ -1,8 +1,62 @@
 # fast-pptx
 
-Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** converts the CSV and TSV files to Markdown tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures high-resolution screenshots of the websites, and then builds a Markdown presentation file for input to [Pandoc](https://pandoc.org). The Markdown file is then converted to PowerPoint presentations using templates that preserve syntax highlighting and make effective use of slide space.
+Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** converts the CSV and TSV files to Markdown tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures high-resolution screenshots of the websites, and then builds a Markdown presentation file for input to [Pandoc](https://pandoc.org). The Markdown file is then converted to PowerPoint presentations using templates that preserve syntax highlighting and make effective use of slide space. You can edit the Markdown to add content and regenerate the presentations using the included `pandoc.sh` script that is generated, or you can edit the presentations in PowerPoint.
 
-See the [sample output](includes/README_sample_output.md) produced from the included sample input files.
+Turn this:
+
+```text
+https://github.com/sindresorhus/pageres-cli
+```
+
+And this:
+
+```text
+graph TD
+    A[Start] --> B[Task 1]
+    B --> C{Decision 1}
+    C -->|Option 1| D[Task 2]
+    D --> E[Task 3]
+    C -->|Option 2| F[Task 4]
+    F --> G[Task 5]
+
+    classDef default fill:#f9f,stroke:#333,stroke-width:4px;
+    classDef decision fill:#fdd,stroke:#f66,stroke-width:2px,stroke-dasharray: 5, 5;
+    class C decision
+```
+
+And this:
+
+```text
+#!/usr/bin/env Rscript
+
+# Simulate some data
+set.seed(42)
+x <- 1:100
+y <- x * 2 + rnorm(100, mean = 0, sd = 50)
+
+# Create a linear model
+model <- lm(y ~ x)
+
+# Summary of the model
+summary(model)
+
+# Plot the data and the model
+plot(x, y, main = "Linear Regression Model", xlab = "X", ylab = "Y")
+abline(model, col = "red")
+
+# Print the coefficients
+print(coef(model))
+```
+
+Into this:
+
+![./includes/slide_5.png](./includes/slide_5.png)
+
+![./includes/slide_13.png](./includes/slide_13.png)
+
+![./includes/slide_code_block_3.png](./includes/slide_code_block_3.png)
+
+See the [sample output](includes/README_sample_output.md) for the full collection of slides produced by the included sample input files.
 
 ## Author
 
