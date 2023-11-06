@@ -175,7 +175,7 @@ OPTIONAL ARGUMENTS:
    -cr, --cron
       Run silently unless error is encountered.
    -f, --force
-      Overwrite existing slides.md and pptx files in output directory.
+      Overwrite existing Markdown and PowerPoint files in output directory.
    -h, --help
       Display this message.
    -nc, --no-colour
