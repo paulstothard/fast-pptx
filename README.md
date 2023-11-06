@@ -1,6 +1,6 @@
 # fast-pptx
 
-Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** adds syntax highlighting to the code snippets, converts the CSV and TSV files to tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures screenshots of the websites, and then adds the content to a PowerPoint presentation.
+Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** converts the CSV and TSV files to Markdown tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures high-resolution screenshots of the websites, and then builds a Markdown presentation file for input to [Pandoc](https://pandoc.org). The Markdown file is then converted to PowerPoint presentations using templates that preserve syntax highlighting and make effective use of slide space.
 
 See the [sample output](includes/README_sample_output.md) produced from the included sample input files.
 
