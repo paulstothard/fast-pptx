@@ -43,11 +43,11 @@ OPTIONAL ARGUMENTS:
    -h, --help
       Display this message.
    -nc, --no-colour
-      Disable colour output.
+      Disable colour messages.
    -r, --reprocess
       Reprocess input files even if conversion files exist in output directory.
    -v, --verbose
-      Display verbose output.
+      Display verbose messages.
 EOF
 }
 
