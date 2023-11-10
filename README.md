@@ -50,11 +50,11 @@ print(coef(model))
 
 Into this:
 
-![./includes/slide_5.png](./includes/slide_5.png)
+![./includes/slide_5.png](./includes/slides/Slide5.png)
 
-![./includes/slide_13.png](./includes/slide_13.png)
+![./includes/slide_13.png](./includes/slides/Slide13.png)
 
-![./includes/slide_code_block_3.png](./includes/slide_code_block_3.png)
+![./includes/slide_code_block_3.png](./includes/slides_code_blocks/Slide3.png)
 
 See the [sample output](includes/README_sample_output.md) for the full collection of slides produced by the included sample input files.
 

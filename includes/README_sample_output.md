@@ -2,77 +2,77 @@
 
 ## Slides
 
-![slide_1.png](slide_1.png)
+![Slide1.png](./slides/Slide1.png)
 
-![slide_2.png](slide_2.png)
+![Slide2.png](./slides/Slide2.png)
 
-![slide_3.png](slide_3.png)
+![Slide3.png](./slides/Slide3.png)
 
-![slide_4.png](slide_4.png)
+![Slide4.png](./slides/Slide4.png)
 
-![slide_5.png](slide_5.png)
+![Slide5.png](./slides/Slide5.png)
 
-![slide_6.png](slide_6.png)
+![Slide6.png](./slides/Slide6.png)
 
-![slide_7.png](slide_7.png)
+![Slide7.png](./slides/Slide7.png)
 
-![slide_8.png](slide_8.png)
+![Slide8.png](./slides/Slide8.png)
 
-![slide_9.png](slide_9.png)
+![Slide9.png](./slides/Slide9.png)
 
-![slide_10.png](slide_10.png)
+![Slide10.png](./slides/Slide10.png)
 
-![slide_11.png](slide_11.png)
+![Slide11.png](./slides/Slide11.png)
 
-![slide_12.png](slide_12.png)
+![Slide12.png](./slides/Slide12.png)
 
-![slide_13.png](slide_13.png)
+![Slide13.png](./slides/Slide13.png)
 
-![slide_14.png](slide_14.png)
+![Slide14.png](./slides/Slide14.png)
 
-![slide_15.png](slide_15.png)
+![Slide15.png](./slides/Slide15.png)
 
-![slide_16.png](slide_16.png)
+![Slide16.png](./slides/Slide16.png)
 
-![slide_17.png](slide_17.png)
+![Slide17.png](./slides/Slide17.png)
 
-![slide_18.png](slide_18.png)
+![Slide18.png](./slides/Slide18.png)
 
-![slide_19.png](slide_19.png)
+![Slide19.png](./slides/Slide19.png)
 
-![slide_20.png](slide_20.png)
+![Slide20.png](./slides/Slide20.png)
 
-![slide_21.png](slide_21.png)
+![Slide21.png](./slides/Slide21.png)
 
-![slide_22.png](slide_22.png)
+![Slide22.png](./slides/Slide22.png)
 
-![slide_23.png](slide_23.png)
+![Slide23.png](./slides/Slide23.png)
 
-![slide_24.png](slide_24.png)
+![Slide24.png](./slides/Slide24.png)
 
-![slide_25.png](slide_25.png)
+![Slide25.png](./slides/Slide25.png)
 
-![slide_26.png](slide_26.png)
+![Slide26.png](./slides/Slide26.png)
 
-![slide_27.png](slide_27.png)
+![Slide27.png](./slides/Slide27.png)
 
 ## Slides with Code Blocks
 
-![slide_code_block_1.png](slide_code_block_1.png)
+![Slide1.png](./slides_code_blocks/Slide1.png)
 
-![slide_code_block_2.png](slide_code_block_2.png)
+![Slide2.png](./slides_code_blocks/Slide2.png)
 
-![slide_code_block_3.png](slide_code_block_3.png)
+![Slide3.png](./slides_code_blocks/Slide3.png)
 
-![slide_code_block_4.png](slide_code_block_4.png)
+![Slide4.png](./slides_code_blocks/Slide4.png)
 
-![slide_code_block_5.png](slide_code_block_5.png)
+![Slide5.png](./slides_code_blocks/Slide5.png)
 
-![slide_code_block_6.png](slide_code_block_6.png)
+![Slide6.png](./slides_code_blocks/Slide6.png)
 
-![slide_code_block_7.png](slide_code_block_7.png)
+![Slide7.png](./slides_code_blocks/Slide7.png)
 
-![slide_code_block_8.png](slide_code_block_8.png)
+![Slide8.png](./slides_code_blocks/Slide8.png)
 
-![slide_code_block_9.png](slide_code_block_9.png)
+![Slide9.png](./slides_code_blocks/Slide9.png)
 
