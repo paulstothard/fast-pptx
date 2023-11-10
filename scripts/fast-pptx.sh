@@ -233,7 +233,7 @@ function main() {
       verbose_print "'$pdf' has already been processed--skipping."
       continue
     fi
-    pdftoppm -f 1 -l 1 -png "$pdf" "${pdf}" -r 600
+    pdftoppm -png "$pdf" "${pdf}" -r 600
   done
 
   # convert jpg and jpeg images to png
