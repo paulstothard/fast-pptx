@@ -148,7 +148,11 @@ function main() {
       fi
       case "$url" in \#*) continue ;; esac
       verbose_print "Generating image for URL '$url'."
-      output_name=$(echo "$url" | sed -E 's/[^A-Za-z0-9._-]+/_/g')
+      url_hash=$(echo -n "$url" | md5sum | cut -c1-8)  # Generate a hash of the URL and take the first 8 characters
+      url_substring=$(echo "$url" | cut -c1-32)  # Take the first 32 characters of the URL
+      output_name="${url_hash}_${url_substring}"  # Concatenate the hash and the substring
+      output_name=$(echo "$output_name" | sed -E 's/[^A-Za-z0-9._-]+/_/g')  # Replace any non-alphanumeric characters
+      output_name=$(echo "$output_name" | cut -c1-50)  # Limit the output name to 50 characters
       if [ -f "${output-}/includes/${output_name}.png" ] && [ -z "${reprocess-}" ]; then
         verbose_print "'$url' has already been processed--skipping."
         continue
