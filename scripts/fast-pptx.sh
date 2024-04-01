@@ -148,11 +148,11 @@ function main() {
       fi
       case "$url" in \#*) continue ;; esac
       verbose_print "Generating image for URL '$url'."
-      url_hash=$(echo -n "$url" | md5sum | cut -c1-8)  # Generate a hash of the URL and take the first 8 characters
-      url_substring=$(echo "$url" | cut -c1-32)  # Take the first 32 characters of the URL
+      url_hash=$(printf "%s" "$url" | md5sum | cut -c1-8)  # Generate a hash of the URL and take the first 8 characters
+      url_substring=$(printf "%s" "$url" | cut -c1-32)  # Take the first 32 characters of the URL
       output_name="${url_hash}_${url_substring}"  # Concatenate the hash and the substring
-      output_name=$(echo "$output_name" | sed -E 's/[^A-Za-z0-9._-]+/_/g')  # Replace any non-alphanumeric characters
-      output_name=$(echo "$output_name" | cut -c1-50)  # Limit the output name to 50 characters
+      output_name=$(printf "%s" "$output_name" | sed -E 's/[^A-Za-z0-9._-]+/_/g')  # Replace any non-alphanumeric characters
+      output_name=$(printf "%s" "$output_name" | cut -c1-50)  # Limit the output name to 50 characters
       if [ -f "${output-}/includes/${output_name}.png" ] && [ -z "${reprocess-}" ]; then
         verbose_print "'$url' has already been processed--skipping."
         continue
@@ -322,11 +322,11 @@ function main() {
 END
   )
 
-  echo "$TITLE" >"$markdown"
-  echo -e "" >>"$markdown"
+  printf "%s\n" "$TITLE" >"$markdown"
+  printf "\n" >>"$markdown"
 
-  echo "$TITLE" >"$markdown_code_blocks"
-  echo -e "" >>"$markdown_code_blocks"
+  printf "%s\n" "$TITLE" >"$markdown_code_blocks"
+  printf "\n" >>"$markdown_code_blocks"
 
   SECTION=$(
     cat <<-END
@@ -334,8 +334,8 @@ END
 END
   )
 
-  echo "$SECTION" >>"$markdown"
-  echo -e "" >>"$markdown"
+  printf "%s\n" "$SECTION" >>"$markdown"
+  printf "\n" >>"$markdown"
 
   SINGLE_BULLETED_LIST=$(
     cat <<-END
@@ -353,8 +353,8 @@ Notes
 END
   )
 
-  echo "$SINGLE_BULLETED_LIST" >>"$markdown"
-  echo -e "" >>"$markdown"
+  printf "%s\n" "$SINGLE_BULLETED_LIST" >>"$markdown"
+  printf "\n" >>"$markdown"
 
   # generate slides for each image
   find "${output-}/includes/resized" -mindepth 1 -maxdepth 1 -iname "*.png" -type f -exec ls -rt "{}" + | while IFS= read -r png; do
@@ -379,8 +379,8 @@ $png_in_output
 END
     )
 
-    echo "$SINGLE_IMAGE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$SINGLE_IMAGE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
     SINGLE_IMAGE=$(
       cat <<-END
@@ -413,8 +413,8 @@ $png_in_output
 END
     )
 
-    echo "$SINGLE_IMAGE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$SINGLE_IMAGE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
   done
 
@@ -441,8 +441,8 @@ $gif_in_output
 END
     )
 
-    echo "$SINGLE_IMAGE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$SINGLE_IMAGE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
     SINGLE_IMAGE=$(
       cat <<-END
@@ -475,8 +475,8 @@ $gif_in_output
 END
     )
 
-    echo "$SINGLE_IMAGE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$SINGLE_IMAGE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
   done
 
@@ -505,8 +505,8 @@ $md_in_output
 END
     )
 
-    echo "$TABLE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$TABLE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
     TABLE=$(
       cat <<-END
@@ -539,8 +539,8 @@ $md_in_output
 END
     )
 
-    echo "$TABLE" >>"$markdown"
-    echo -e "" >>"$markdown"
+    printf "%s\n" "$TABLE" >>"$markdown"
+    printf "\n" >>"$markdown"
 
   done
 
@@ -579,8 +579,8 @@ $code_in_output
 END
     )
 
-    echo "$CODE" >>"$markdown_code_blocks"
-    echo -e "" >>"$markdown_code_blocks"
+    printf "%s\n" "$CODE" >>"$markdown_code_blocks"
+    printf "\n" >>"$markdown_code_blocks"
 
     CODE=$(
       cat <<-END
@@ -615,8 +615,8 @@ $code_in_output
 END
     )
 
-    echo "$CODE" >>"$markdown_code_blocks"
-    echo -e "" >>"$markdown_code_blocks"
+    printf "%s\n" "$CODE" >>"$markdown_code_blocks"
+    printf "\n" >>"$markdown_code_blocks"
 
   done
 
@@ -636,8 +636,8 @@ END
   # create a script that can be used to regenerate the pptx file
   # include the shebang line and make the file executable
   pandoc_command="pandoc $markdown_file -o slides.pptx --reference-doc ./includes/theme.pptx"
-  echo "#!/bin/bash" >"${output-}/pandoc.sh"
-  echo "$pandoc_command" >>"${output-}/pandoc.sh"
+  printf "#!/bin/bash\n" >"${output-}/pandoc.sh"
+  printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
   chmod +x "${output-}/pandoc.sh"
 
   # generate pptx file using code_blocks template
@@ -659,10 +659,10 @@ END
   pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o slides_code_blocks.pptx --reference-doc ./includes/theme_code_blocks.pptx"
 
   if [ -f "${output-}/pandoc.sh" ]; then
-    echo "$pandoc_command" >>"${output-}/pandoc.sh"
+    printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
   else
-    echo "#!/bin/bash" >"${output-}/pandoc.sh"
-    echo "$pandoc_command" >>"${output-}/pandoc.sh"
+    printf "#!/usr/bin/env bash\n" >"${output-}/pandoc.sh"
+    printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
     chmod +x "${output-}/pandoc.sh"
   fi
 
