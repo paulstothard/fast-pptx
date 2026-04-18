@@ -142,10 +142,7 @@ brew install python
 npm install -g mermaid.cli
 npm install -g csv2md
 npm install -g svgexport
-npx @puppeteer/browsers install chrome
 ```
-
-The last command installs the Chrome browser that `mermaid-cli` requires internally to render diagrams.
 
 Website screenshots are captured using the included `scripts/capture-site.mjs` helper. It requires Playwright and a one-time Chromium install (run once from the repo root after cloning):
 

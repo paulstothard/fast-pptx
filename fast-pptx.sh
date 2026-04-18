@@ -173,6 +173,11 @@ function main() {
     script_exit "Please use '-o' to specify an output directory. Use '-h' for help." 2
   fi
 
+  # Point mermaid-cli's Puppeteer at the Playwright Chromium so only one
+  # browser install is needed.
+  PUPPETEER_EXECUTABLE_PATH="$(node "${script_dir}/scripts/chromium-path.mjs")"
+  export PUPPETEER_EXECUTABLE_PATH
+
   # check dependencies
   check_binary "dot"
   check_binary "mmdc"
