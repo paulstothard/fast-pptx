@@ -1,7 +1,5 @@
 # Sample Output
 
-## Slides
-
 ![Slide1.png](./slides/Slide1.png)
 
 ![Slide2.png](./slides/Slide2.png)
@@ -56,23 +54,21 @@
 
 ![Slide27.png](./slides/Slide27.png)
 
-## Slides with Code Blocks
+![Slide28.png](./slides/Slide28.png)
 
-![Slide1.png](./slides_code_blocks/Slide1.png)
+![Slide29.png](./slides/Slide29.png)
 
-![Slide2.png](./slides_code_blocks/Slide2.png)
+![Slide30.png](./slides/Slide30.png)
 
-![Slide3.png](./slides_code_blocks/Slide3.png)
+![Slide31.png](./slides/Slide31.png)
 
-![Slide4.png](./slides_code_blocks/Slide4.png)
+![Slide32.png](./slides/Slide32.png)
 
-![Slide5.png](./slides_code_blocks/Slide5.png)
+![Slide33.png](./slides/Slide33.png)
 
-![Slide6.png](./slides_code_blocks/Slide6.png)
+![Slide34.png](./slides/Slide34.png)
 
-![Slide7.png](./slides_code_blocks/Slide7.png)
+![Slide35.png](./slides/Slide35.png)
 
-![Slide8.png](./slides_code_blocks/Slide8.png)
-
-![Slide9.png](./slides_code_blocks/Slide9.png)
+![Slide36.png](./slides/Slide36.png)
 
