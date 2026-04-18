@@ -56,7 +56,7 @@ Those inputs are then turned into slides like these:
 
 ![./includes/slide_13.png](./includes/slides/Slide13.png)
 
-![./includes/slide_code_block_3.png](./includes/slides_code_blocks/Slide3.png)
+![./includes/slide_29.png](./includes/slides/Slide29.png)
 
 See the [sample output](includes/README_sample_output.md) for the full collection of slides produced by the included sample input files.
 
