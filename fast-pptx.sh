@@ -163,7 +163,7 @@ function main() {
   #lock_init system
 
   merge_script=merge_pptx.py
-  merge_script_path="$(cd "${script_dir}" && pwd)/${merge_script}"
+  merge_script_path="$(cd "${script_dir}" && pwd)/scripts/${merge_script}"
 
   if [ -z "${input-}" ]; then
     script_exit "Please use '-i' to specify an input directory. Use '-h' for help." 2
@@ -174,7 +174,6 @@ function main() {
   fi
 
   # check dependencies
-  check_binary "pageres"
   check_binary "dot"
   check_binary "mmdc"
   check_binary "node" 1
@@ -208,7 +207,7 @@ function main() {
   fi
 
   # process urls in file input/sites.txt
-  # save each html file as png using pageres
+  # save each site as a viewport-only PNG using the Playwright helper
   if [ -f "${input-}/sites.txt" ]; then
     while IFS='' read -r url || [ -n "$url" ]; do
       if [ -z "$url" ]; then
@@ -225,10 +224,8 @@ function main() {
         verbose_print "'$url' has already been processed--skipping."
         continue
       fi
-      # these settings give a final image of width 4485 pixels
-      # first remove output file if it exists
       rm -f "${output-}/includes/${output_name}.png"
-      pageres "$url" 897x1090 --crop --scale=5 --filename="${output-}/includes/${output_name}"
+      node "${script_dir}/scripts/capture-site.mjs" "$url" "${output-}/includes/${output_name}.png"
     done <"${input-}/sites.txt"
   fi
 
@@ -356,7 +353,7 @@ function main() {
   done
 
   # copy potx and pptx template files
-  find "${script_dir}/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
+  find "${script_dir}/scripts/includes" -mindepth 1 -maxdepth 1 \( -iname \*.potx -o -iname \*.pptx \) -type f -exec ls -rt "{}" + | while IFS= read -r template; do
     file=$(basename -- "$template")
     verbose_print "Copying '$template'."
     if [ -f "${output-}/includes/${file}" ] && [ -z "${reprocess-}" ]; then
@@ -699,7 +696,7 @@ END
   fi
 
   # convert the Markdown file to pptx
-  pandoc "$markdown" --resource-path="${output-}" -o "$pptx" --reference-doc "./includes/theme.pptx"
+  pandoc "$markdown" --resource-path="${output-}" -o "$pptx" --reference-doc "${output}/includes/theme.pptx"
   python "${merge_script_path}" "$pptx" "$pptx"
 
   # create a script that can be used to regenerate the pptx file
@@ -727,7 +724,7 @@ END
       script_exit "'${pptx_code_blocks}' has already been created. Use '--force' to overwrite." 2
     fi
 
-    pandoc "$markdown_code_blocks" --resource-path="${output-}" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+    pandoc "$markdown_code_blocks" --resource-path="${output-}" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "${output}/includes/theme_code_blocks.pptx"
     python "${merge_script_path}" "$pptx_code_blocks" "$pptx_code_blocks"
     python "${merge_script_path}" "$pptx" "$pptx_code_blocks" "$pptx_merged"
 
@@ -755,8 +752,8 @@ END
 
 }
 
-# shellcheck source=source.sh
-source "$(dirname "${BASH_SOURCE[0]}")/source.sh"
+# shellcheck source=scripts/source.sh
+source "$(dirname "${BASH_SOURCE[0]}")/scripts/source.sh"
 
 # Invoke main with args if not sourced
 # Approach via: https://stackoverflow.com/a/28776166/8787985

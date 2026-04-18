@@ -3,3 +3,7 @@ sample_output
 sample_output_two-column
 .DS_Store
 *.code-workspace
+scripts/node_modules/
+scripts/package-lock.json
+__pycache__/
+*.pyc
