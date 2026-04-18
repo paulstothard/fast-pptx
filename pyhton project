@@ -1,0 +1,68 @@
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+conn = sqlite3.connect('library.db')
+cursor = conn.cursor()
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    author TEXT,
+    genre TEXT,
+    quantity INTEGER
+)''')
+conn.commit()
+def add_book():
+    title = title_entry.get()
+    author = author_entry.get()
+    genre = genre_entry.get()
+    quantity = quantity_entry.get()
+
+    if not (title and author and genre and quantity):
+        messagebox.showerror("Input Error", "All fields must be filled!")
+        return
+
+    cursor.execute("INSERT INTO books (title, author, genre, quantity) VALUES (?, ?, ?, ?)", 
+                   (title, author, genre, quantity))
+    conn.commit()
+    messagebox.showinfo("Success", "Book added successfully!")
+    clear_entries()
+def display_books():
+    cursor.execute("SELECT * FROM books")
+    rows = cursor.fetchall()
+    result = ""
+    for row in rows:
+        result += f"ID: {row[0]}, Title: {row[1]}, Author: {row[2]}, Genre: {row[3]}, Quantity: {row[4]}\n"
+    if result:
+        messagebox.showinfo("Library Books", result)
+    else:
+        messagebox.showinfo("Library Books", "No books found.")
+def clear_entries():
+    title_entry.delete(0, tk.END)
+    author_entry.delete(0, tk.END)
+    genre_entry.delete(0, tk.END)
+    quantity_entry.delete(0, tk.END)
+root = tk.Tk()
+root.title("Library Management System")
+tk.Label(root, text="Title:").grid(row=0, column=0, padx=10, pady=10)
+title_entry = tk.Entry(root)
+title_entry.grid(row=0, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Author:").grid(row=1, column=0, padx=10, pady=10)
+author_entry = tk.Entry(root)
+author_entry.grid(row=1, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Genre:").grid(row=2, column=0, padx=10, pady=10)
+genre_entry = tk.Entry(root)
+genre_entry.grid(row=2, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Quantity:").grid(row=3, column=0, padx=10, pady=10)
+quantity_entry = tk.Entry(root)
+quantity_entry.grid(row=3, column=1, padx=10, pady=10)
+add_button = tk.Button(root, text="Add Book", command=add_book)
+add_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+view_button = tk.Button(root, text="View Books", command=display_books)
+view_button.grid(row=5, column=0, columnspan=2, pady=10)
+root.mainloop()
+conn.close()
