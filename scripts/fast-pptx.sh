@@ -95,6 +95,60 @@ function parse_params() {
   done
 }
 
+function detect_hash_command() {
+  if check_binary "md5sum"; then
+    hash_command="md5sum"
+    return 0
+  fi
+
+  if check_binary "md5"; then
+    hash_command="md5"
+    return 0
+  fi
+
+  script_exit "Missing dependency: couldn't locate either 'md5sum' or 'md5'." 1
+}
+
+function hash_string() {
+  if [ -z "${hash_command-}" ]; then
+    script_exit "Hash command has not been initialised." 1
+  fi
+
+  if [ "${hash_command}" = "md5sum" ]; then
+    printf "%s" "$1" | md5sum | cut -c1-8
+    return 0
+  fi
+
+  printf "%s" "$1" | md5 -q | cut -c1-8
+}
+
+function detect_image_magick_command() {
+  if check_binary "magick"; then
+    image_magick_command="magick"
+    return 0
+  fi
+
+  if check_binary "convert"; then
+    image_magick_command="convert"
+    return 0
+  fi
+
+  script_exit "Missing dependency: couldn't locate either 'magick' or 'convert' from ImageMagick." 1
+}
+
+function image_magick_convert() {
+  if [ -z "${image_magick_command-}" ]; then
+    script_exit "ImageMagick command has not been initialised." 1
+  fi
+
+  if [ "${image_magick_command}" = "magick" ]; then
+    magick "$@"
+    return 0
+  fi
+
+  convert "$@"
+}
+
 # DESC: Main control flow
 # ARGS: $@ (optional): Arguments provided to the script
 # OUTS: None
@@ -108,6 +162,9 @@ function main() {
   colour_init
   #lock_init system
 
+  merge_script=merge_pptx.py
+  merge_script_path="$(cd "${script_dir}" && pwd)/${merge_script}"
+
   if [ -z "${input-}" ]; then
     script_exit "Please use '-i' to specify an input directory. Use '-h' for help." 2
   fi
@@ -120,12 +177,23 @@ function main() {
   check_binary "pageres"
   check_binary "dot"
   check_binary "mmdc"
+  check_binary "node" 1
   check_binary "awk"
   check_binary "csv2md"
   check_binary "pdftoppm"
-  check_binary "convert"
   check_binary "svgexport"
   check_binary "pandoc" 1
+  check_binary "python" 1
+  detect_hash_command
+  detect_image_magick_command
+
+  if [ ! -f "${merge_script_path}" ]; then
+    script_exit "Missing merge helper '${merge_script_path}'." 1
+  fi
+
+  if ! python "${merge_script_path}" --help >/dev/null 2>&1; then
+    script_exit "Unable to run merge helper '${merge_script_path}'." 1
+  fi
 
   if [ ! -d "${output-}" ]; then
     mkdir -p "${output-}"
@@ -148,7 +216,7 @@ function main() {
       fi
       case "$url" in \#*) continue ;; esac
       verbose_print "Generating image for URL '$url'."
-      url_hash=$(printf "%s" "$url" | md5sum | cut -c1-8)  # Generate a hash of the URL and take the first 8 characters
+      url_hash=$(hash_string "$url")  # Generate a hash of the URL and take the first 8 characters
       url_substring=$(printf "%s" "$url" | cut -c1-32)  # Take the first 32 characters of the URL
       output_name="${url_hash}_${url_substring}"  # Concatenate the hash and the substring
       output_name=$(printf "%s" "$output_name" | sed -E 's/[^A-Za-z0-9._-]+/_/g')  # Replace any non-alphanumeric characters
@@ -248,7 +316,7 @@ function main() {
       verbose_print "'$jpg' has already been processed--skipping."
       continue
     fi
-    convert "$jpg" "${output-}/includes/${file}.png"
+    image_magick_convert "$jpg" "${output-}/includes/${file}.png"
   done
 
   # convert tiff images to png
@@ -259,7 +327,7 @@ function main() {
       verbose_print "'$tiff' has already been processed--skipping."
       continue
     fi
-    convert "$tiff" "${output-}/includes/${file}.png"
+    image_magick_convert "$tiff" "${output-}/includes/${file}.png"
   done
 
   # convert svg images to png
@@ -284,7 +352,7 @@ function main() {
       verbose_print "'$png' has already been processed--skipping."
       continue
     fi
-    convert "$png" -resize 4000 "${output}/includes/resized/${file}"
+    image_magick_convert "$png" -resize 4000 "${output}/includes/resized/${file}"
   done
 
   # copy potx and pptx template files
@@ -632,38 +700,55 @@ END
 
   # convert the Markdown file to pptx
   pandoc "$markdown" --resource-path="${output-}" -o "$pptx" --reference-doc "./includes/theme.pptx"
+  python "${merge_script_path}" "$pptx" "$pptx"
 
   # create a script that can be used to regenerate the pptx file
   # include the shebang line and make the file executable
   pandoc_command="pandoc $markdown_file -o slides.pptx --reference-doc ./includes/theme.pptx"
   printf "#!/bin/bash\n" >"${output-}/pandoc.sh"
   printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
+  printf "%s\n" "python \"${merge_script_path}\" slides.pptx slides.pptx" >>"${output-}/pandoc.sh"
   chmod +x "${output-}/pandoc.sh"
 
-  # generate pptx file using code_blocks template
+  # generate merged pptx file that preserves the code deck formatting
   pptx_code_blocks=${output-}/slides_code_blocks.pptx
+  pptx_merged=${output-}/slides_merged.pptx
 
-  verbose_print "Generating pptx file '$pptx'."
+  verbose_print "Generating pptx file '$pptx_merged'."
 
-  # check if the output file exists and if $force is not true
-  if [ -f "${pptx_code_blocks}" ] && [ -z "${force-}" ]; then
-    script_exit "'${pptx_code_blocks}' has already been created. Use '--force' to overwrite." 2
+  if [ -f "${pptx_merged}" ] && [ -z "${force-}" ]; then
+    script_exit "'${pptx_merged}' has already been created. Use '--force' to overwrite." 2
   fi
 
-  # convert the Markdown file to pptx
-  pandoc "$markdown_code_blocks" --resource-path="${output-}" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+  if grep -q '```' "$markdown_code_blocks"; then
+    verbose_print "Generating pptx file '$pptx_code_blocks'."
 
-  # create a script that can be used to regenerate the pptx file
-  # include the shebang line and make the file executable
-  # check if pandoc.sh exists and if so append to it
-  pandoc_command="pandoc $markdown_code_blocks_file --highlight-style zenburn -o slides_code_blocks.pptx --reference-doc ./includes/theme_code_blocks.pptx"
+    if [ -f "${pptx_code_blocks}" ] && [ -z "${force-}" ]; then
+      script_exit "'${pptx_code_blocks}' has already been created. Use '--force' to overwrite." 2
+    fi
 
-  if [ -f "${output-}/pandoc.sh" ]; then
-    printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
+    pandoc "$markdown_code_blocks" --resource-path="${output-}" --highlight-style zenburn -o "$pptx_code_blocks" --reference-doc "./includes/theme_code_blocks.pptx"
+    python "${merge_script_path}" "$pptx_code_blocks" "$pptx_code_blocks"
+    python "${merge_script_path}" "$pptx" "$pptx_code_blocks" "$pptx_merged"
+
+    printf "%s\n" "if grep -q '\`\`\`' $markdown_code_blocks_file; then" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  pandoc $markdown_code_blocks_file --highlight-style zenburn -o slides_code_blocks.pptx --reference-doc ./includes/theme_code_blocks.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides_code_blocks.pptx slides_code_blocks.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides.pptx slides_code_blocks.pptx slides_merged.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "else" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides.pptx slides_merged.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "fi" >>"${output-}/pandoc.sh"
   else
-    printf "#!/usr/bin/env bash\n" >"${output-}/pandoc.sh"
-    printf "%s\n" "$pandoc_command" >>"${output-}/pandoc.sh"
-    chmod +x "${output-}/pandoc.sh"
+    verbose_print "No code slides were generated; fixing and copying '$pptx' to '$pptx_merged'."
+    python "${merge_script_path}" "$pptx" "$pptx_merged"
+
+    printf "%s\n" "if grep -q '\`\`\`' $markdown_code_blocks_file; then" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  pandoc $markdown_code_blocks_file --highlight-style zenburn -o slides_code_blocks.pptx --reference-doc ./includes/theme_code_blocks.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides_code_blocks.pptx slides_code_blocks.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides.pptx slides_code_blocks.pptx slides_merged.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "else" >>"${output-}/pandoc.sh"
+    printf "%s\n" "  python \"${merge_script_path}\" slides.pptx slides_merged.pptx" >>"${output-}/pandoc.sh"
+    printf "%s\n" "fi" >>"${output-}/pandoc.sh"
   fi
 
   verbose_print "Done. Check '$output' for slides."

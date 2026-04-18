@@ -1,14 +1,16 @@
 # fast-pptx
 
-Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** converts the CSV and TSV files to Markdown tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures high-resolution screenshots of the websites, and then builds a Markdown presentation file for input to [Pandoc](https://pandoc.org). The Markdown file is then converted to PowerPoint presentations using templates that preserve syntax highlighting and make effective use of slide space. You can edit the Markdown to add content and regenerate the presentations using the included `pandoc.sh` script that is generated, or you can edit the presentations in PowerPoint.
+Quickly make a PowerPoint presentation from a directory of code snippets, CSV files, TSV files, Graphviz DOT files, Mermaid mmd files, images, PDFs, and URLs. **fast-pptx** converts the CSV and TSV files to Markdown tables, renders the DOT and mmd files, creates high-resolution images from the PDFs, captures high-resolution screenshots of the websites listed in `sites.txt`, and then builds a Markdown presentation file for input to [Pandoc](https://pandoc.org). The Markdown file is then converted to PowerPoint presentations using templates that preserve syntax highlighting and make effective use of slide space. You can edit the Markdown to add content and regenerate the presentations using the included `pandoc.sh` script that is generated, or you can edit the presentations in PowerPoint.
 
-Turn this:
+The intended workflow is to start a presentation by deciding which figures, screenshots, tables, and code snippets you want to show, place those source files together in one input directory, and let **fast-pptx** build the first draft of the slide deck around them. The generated slides give you a presentation skeleton populated with the visual and technical material you selected, which you can then open in PowerPoint to add the explanatory text, reorder slides, refine formatting, and make the deck presentation-ready.
+
+For example, start with an input directory that contains a `sites.txt` file with URLs to capture as screenshots:
 
 ```text
 https://github.com/sindresorhus/pageres-cli
 ```
 
-And this:
+It can also contain a Graphviz `.dot` file such as:
 
 ```text
 graph TD
@@ -24,7 +26,7 @@ graph TD
     class C decision
 ```
 
-And this:
+And it can contain a source code file such as this R script:
 
 ```text
 #!/usr/bin/env Rscript
@@ -48,7 +50,7 @@ abline(model, col = "red")
 print(coef(model))
 ```
 
-Into this:
+Those inputs are then turned into slides like these:
 
 ![./includes/slide_5.png](./includes/slides/Slide5.png)
 
@@ -70,13 +72,13 @@ Paul Stothard
 ./fast-pptx.sh -i input-directory -o output-directory
 ```
 
-The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If code snippets are included in the input directory, then a second presentations is created with the code snippets converted to syntax-highlighted code blocks.
+The source files are used to build content, which is added to a PowerPoint presentation created in the output directory. If code snippets are included in the input directory, then a second presentation is created with the code snippets converted to syntax-highlighted code blocks. A third presentation, `slides_merged.pptx`, is then created automatically by fixing the generated `.pptx` output and appending the code deck to the regular deck while preserving the appended slides' source formatting. If there are no code slides to append, `slides_merged.pptx` is created as a fixed copy of `slides.pptx`.
 
 The slides can then be edited in PowerPoint to change the order of slides, add or modify text, adjust font sizes, and choose designs for specific slides (using PowerPoint Designer by choosing **Design > Design Ideas** on the ribbon). The file size can then be reduced using **File > Compress Pictures...**.
 
-You can also edit or replace the `theme.pptx` and `theme_code_blocks.pptx` files that are written to the output folder's `includes` directory and then re-generate the slides using the `pandoc.sh` script that is included in the output folder. These reference `.pptx` files serve as templates. Pandoc will use these files as a basis for creating the new presentations. This means that instead of the default PowerPoint styles, your presentation will inherit the styles defined in the reference documents — including fonts, colors, bullet styles, and other formatting. A separate reference document is used for the code blocks to allow for smaller fonts and different colors to be specified.
+You can also edit or replace the `theme.pptx` and `theme_code_blocks.pptx` files that are written to the output folder's `includes` directory and then re-generate the slides using the `pandoc.sh` script that is included in the output folder. These reference `.pptx` files serve as templates. Pandoc will use these files as a basis for creating the new presentations. This means that instead of the default PowerPoint styles, your presentation will inherit the styles defined in the reference documents — including fonts, colors, bullet styles, and other formatting. A separate reference document is used for the code blocks to allow for smaller fonts and different colors to be specified. The generated `pandoc.sh` also re-runs the PPTX fix/merge step by calling the installed `merge_pptx.py` helper from the `fast-pptx` scripts directory.
 
-To combine the content from the `slides.pptx` and `slides_code_blocks.pptx` into a single presentation, open both presentations and then copy and paste slides from one presentation to the other. Click on the **Paste Options** button that appears after pasting and choose **Keep Source Formatting**.
+`fast-pptx` also generates `slides_merged.pptx`, which appends `slides_code_blocks.pptx` to `slides.pptx` while preserving the code deck's slide layouts, master, and theme. When no code deck is generated, `slides_merged.pptx` is still created as the repaired regular deck output.
 
 ## Supported source file types for the input directory
 
@@ -101,8 +103,9 @@ To combine the content from the `slides.pptx` and `slides_code_blocks.pptx` into
 outdir
 ├── slides.pptx
 ├── slides.md
-├── slides_code_blocks.pptx
+├── slides_code_blocks.pptx  # when code slides are generated
 ├── slides_code_blocks.md
+├── slides_merged.pptx
 ├── pandoc.sh
 └── includes
     ├── theme.pptx
@@ -116,12 +119,16 @@ outdir
 
 * [csv2md](https://github.com/pstaender/csv2md)
 * [Graphviz](https://graphviz.org)
-* [mermaid-cli](https://github.com/mermaid-js/mermaid-cli)
-* [ImageMagick](https://imagemagick.org)
+* [ImageMagick](https://imagemagick.org) (`magick` or `convert`)
+* Node.js
 * [pageres-cli](https://github.com/sindresorhus/pageres-cli)
 * [pandoc](https://pandoc.org)
 * [poppler](https://poppler.freedesktop.org)
+* Python 3 for `merge_pptx.py` (generated PPTX repair and deck merge)
 * [svgexport](https://github.com/shakiba/svgexport)
+* [mermaid-cli](https://github.com/mermaid-js/mermaid-cli)
+
+The script also assumes standard Unix command-line tools that are normally bundled with macOS or Linux, such as `awk`, `basename`, `cut`, `dirname`, `du`, `find`, `grep`, `sed`, and `sh`.
 
 On macOS these can be installed as follows:
 
@@ -131,6 +138,7 @@ brew install imagemagick
 brew install node
 brew install pandoc
 brew install poppler
+brew install python
 npm install -g mermaid.cli
 npm install -g csv2md
 npm install -g pageres-cli
@@ -145,11 +153,11 @@ cd fast-pptx/scripts
 ./fast-pptx.sh -i sample_input -o sample_output
 ```
 
-Or download a [release](https://github.com/paulstothard/fast-pptx/releases/) and test `fast-pptx.sh`, e.g.:
+Or download a [release](https://github.com/paulstothard/fast-pptx/releases/) and test `fast-pptx.sh`, for example:
 
 ```bash
-unzip fast-pptx-1.0.1.zip
-cd fast-pptx-1.0.1/scripts
+unzip fast-pptx-x.y.z.zip
+cd fast-pptx-x.y.z/scripts
 ./fast-pptx.sh -i sample_input -o sample_output
 ```
 
