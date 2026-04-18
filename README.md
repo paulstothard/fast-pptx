@@ -7,7 +7,7 @@ The intended workflow is to start a presentation by deciding which figures, scre
 For example, start with an input directory that contains a `sites.txt` file with URLs to capture as screenshots:
 
 ```text
-https://github.com/sindresorhus/pageres-cli
+https://github.com/paulstothard/fast-pptx
 ```
 
 It can also contain a Graphviz `.dot` file such as:
@@ -121,7 +121,7 @@ outdir
 * [Graphviz](https://graphviz.org)
 * [ImageMagick](https://imagemagick.org) (`magick` or `convert`)
 * Node.js
-* [pageres-cli](https://github.com/sindresorhus/pageres-cli)
+* [Playwright](https://playwright.dev) (with Chromium) for website screenshots
 * [pandoc](https://pandoc.org)
 * [poppler](https://poppler.freedesktop.org)
 * Python 3 for `merge_pptx.py` (generated PPTX repair and deck merge)
@@ -141,15 +141,23 @@ brew install poppler
 brew install python
 npm install -g mermaid.cli
 npm install -g csv2md
-npm install -g pageres-cli
 npm install -g svgexport
 ```
 
-Clone the repository and test `fast-pptx.sh`:
+Website screenshots are captured using the included `scripts/capture-site.mjs` helper. It requires Playwright and a one-time Chromium install (run once from the repo root after cloning):
+
+```bash
+npm install --prefix scripts
+npx --prefix scripts playwright install chromium
+```
+
+Clone the repository, install Node dependencies, and test `fast-pptx.sh`:
 
 ```bash
 git clone git@github.com:paulstothard/fast-pptx.git
-cd fast-pptx/scripts
+cd fast-pptx
+npm install --prefix scripts
+npx --prefix scripts playwright install chromium
 ./fast-pptx.sh -i sample_input -o sample_output
 ```
 
@@ -157,7 +165,9 @@ Or download a [release](https://github.com/paulstothard/fast-pptx/releases/) and
 
 ```bash
 unzip fast-pptx-x.y.z.zip
-cd fast-pptx-x.y.z/scripts
+cd fast-pptx-x.y.z
+npm install --prefix scripts
+npx --prefix scripts playwright install chromium
 ./fast-pptx.sh -i sample_input -o sample_output
 ```
 
