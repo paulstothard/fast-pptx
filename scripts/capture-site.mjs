@@ -12,7 +12,9 @@ if (!url || !outputPath) {
 
 let browser;
 try {
-  browser = await chromium.launch();
+  browser = await chromium.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
 
   // Fixed viewport; screenshot is viewport-only (not full-page).
   // deviceScaleFactor: 2 yields a 2560x1600 physical pixel image, which is

@@ -1,0 +1,5 @@
+scripts/node_modules
+sample_output
+.git
+.DS_Store
+*.code-workspace

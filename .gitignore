@@ -1,6 +1,7 @@
 deploy
 sample_output
 sample_output_two-column
+sample_output_docker
 .DS_Store
 *.code-workspace
 scripts/node_modules/
