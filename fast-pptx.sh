@@ -142,11 +142,11 @@ function image_magick_convert() {
   fi
 
   if [ "${image_magick_command}" = "magick" ]; then
-    magick "$@"
+    magick -quiet "$@"
     return 0
   fi
 
-  convert "$@"
+  convert -quiet "$@"
 }
 
 # DESC: Main control flow
@@ -255,7 +255,7 @@ function main() {
       verbose_print "'$mmd' has already been processed--skipping."
       continue
     fi
-    mmdc -i "$mmd" -o "${output-}/includes/${file}.pdf" --pdfFit
+    mmdc -i "$mmd" -o "${output-}/includes/${file}.pdf" --pdfFit --puppeteerConfigFile "${script_dir}/scripts/puppeteer-config.json"
   done
 
   # convert csv files to Markdown using csv2md

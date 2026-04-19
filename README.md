@@ -80,6 +80,52 @@ You can also edit or replace the `theme.pptx` and `theme_code_blocks.pptx` files
 
 `fast-pptx` also generates `slides_merged.pptx`, which appends `slides_code_blocks.pptx` to `slides.pptx` while preserving the code deck's slide layouts, master, and theme. When no code deck is generated, `slides_merged.pptx` is still created as the repaired regular deck output.
 
+## Using the fast-pptx Docker image
+
+Pull the Docker image:
+
+```bash
+docker pull pstothard/fast-pptx
+```
+
+Run the Docker image against the included sample input files (after cloning the repository):
+
+```bash
+docker run --rm \
+  -v "$(pwd)":/data \
+  -u "$(id -u)":"$(id -g)" \
+  -w /data \
+  pstothard/fast-pptx -i sample_input -o sample_output_docker
+```
+
+The output files are written to the `sample_output_docker` directory on the host system.
+
+To use your own input directory:
+
+```bash
+docker run --rm \
+  -v "$(pwd)":/data \
+  -u "$(id -u)":"$(id -g)" \
+  -w /data \
+  pstothard/fast-pptx -i my_input -o my_output
+```
+
+To see progress messages add the `-v` flag:
+
+```bash
+docker run --rm \
+  -v "$(pwd)":/data \
+  -u "$(id -u)":"$(id -g)" \
+  -w /data \
+  pstothard/fast-pptx -v -i my_input -o my_output
+```
+
+To view all options:
+
+```bash
+docker run --rm pstothard/fast-pptx --help
+```
+
 ## Supported source file types for the input directory
 
 | Type                  | Filename          | Converted to                      | PowerPoint Content Generated                                                                            |
