@@ -7,7 +7,7 @@ The intended workflow is to start a presentation by deciding which figures, scre
 For example, start with an input directory that contains a `sites.txt` file with URLs to capture as screenshots:
 
 ```text
-https://github.com/paulstothard/fast-pptx
+https://github.com/sindresorhus/pageres-cli
 ```
 
 It can also contain a Graphviz `.dot` file such as:
